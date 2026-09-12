@@ -1,0 +1,14 @@
+{
+  "manifest_version": 3,
+  "name": "Unhook Personal Hardcode",
+  "version": "1.0",
+  "description": "Hardcoded clean YouTube with custom unhook preferences",
+  "content_scripts": [
+    {
+      "matches": ["*://*.youtube.com/*"],
+      "css": ["clean.css"],
+      "js": ["script.js"],
+      "run_at": "document_start"
+    }
+  ]
+}

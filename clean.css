@@ -1,0 +1,153 @@
+/* ==========================================================
+   1. HOME FEED & EXPLORE / TRENDING
+   ========================================================== */
+/* Hide Home Feed */
+ytd-browse[page-subtype="home"] #contents,
+ytd-browse[page-subtype="home"] ytd-rich-grid-renderer {
+    display: none !important;
+}
+
+/* Hide Explore / Trending entries in left sidebar and browse pages */
+ytd-guide-section-renderer:has(a[href*="/feed/trending"]),
+ytd-guide-entry-renderer:has(a[href*="/feed/trending"]),
+ytd-guide-entry-renderer:has(a[href*="/channel/UC-"]),
+ytd-browse[page-subtype="trending"] {
+    display: none !important;
+}
+
+/* ==========================================================
+   2. VIDEO SIDEBAR (RECOMMENDED, LIVE CHAT, FUNDRAISER)
+   * Keeps Playlists intact
+   ========================================================== */
+/* Hide Recommended Next Videos */
+ytd-watch-next-secondary-results-renderer #items ytd-compact-video-renderer,
+ytd-watch-next-secondary-results-renderer #items ytd-compact-movie-renderer,
+ytd-watch-next-secondary-results-renderer #items ytd-shelf-renderer {
+    display: none !important;
+}
+
+/* Hide Live Chat Frame */
+ytd-live-chat-frame,
+#chat-container,
+#chat {
+    display: none !important;
+}
+
+/* Hide Fundraisers / Donations */
+ytd-donation-shelf-renderer,
+#donation-shelf {
+    display: none !important;
+}
+
+/* ==========================================================
+   3. END SCREEN & ANNOTATIONS
+   ========================================================== */
+/* Hide End Screen Feed & Cards */
+.ytp-ce-element,
+.ytp-ce-covering-overlay,
+.ytp-ce-element-shadow,
+.ytp-endscreen-content,
+.ytp-autonav-endscreen-countdown-container {
+    display: none !important;
+}
+
+/* Disable/Hide Annotations & Interactive Overlays */
+.ytp-cards-teaser,
+.ytp-cards-button,
+.annotation {
+    display: none !important;
+}
+
+/* ==========================================================
+   4. SHORTS & MIXES
+   ========================================================== */
+/* Hide Shorts across Sidebar, Navigation & Feeds */
+ytd-guide-entry-renderer:has(a[title="Shorts"]),
+ytd-mini-guide-entry-renderer[aria-label="Shorts"],
+ytd-reel-shelf-renderer,
+ytd-rich-shelf-renderer[is-shorts],
+#shorts-container {
+    display: none !important;
+}
+
+/* Hide Mixes / Auto-generated Radio playlists */
+ytd-compact-radio-renderer,
+ytd-radio-renderer {
+    display: none !important;
+}
+
+/* ==========================================================
+   5. COMMENTS & PROFILE PHOTOS
+   ========================================================== */
+/* Hide Entire Comments Section */
+ytd-comments#comments,
+#comment-section-renderer {
+    display: none !important;
+}
+
+/* Hide Profile Photos (if loaded in chat or other contexts) */
+#author-thumbnail,
+yt-avatar-shape,
+yt-img-shadow.ytd-comment-view-model {
+    display: none !important;
+}
+
+/* ==========================================================
+   6. MERCH, TICKETS & OFFERS
+   ========================================================== */
+#merchandise-shelf,
+ytd-merchandise-shelf-renderer,
+ytd-ticket-shelf-renderer,
+ytd-offer-module-renderer {
+    display: none !important;
+}
+
+/* ==========================================================
+   7. VIDEO INFO / ACTIONS
+   * Buttons bar hidden; Channel & Description remain visible
+   ========================================================== */
+/* Hide Buttons Bar (Like, Dislike, Share, Clip, Thanks, Download) */
+#top-row ytd-menu-renderer,
+#actions.ytd-watch-metadata ytd-menu-renderer {
+    display: none !important;
+}
+
+/* ==========================================================
+   8. TOP HEADER & NOTIFICATIONS
+   ========================================================== */
+/* Hide Top Navigation Header completely */
+#masthead-container,
+ytd-masthead {
+    display: none !important;
+}
+
+/* Adjust page spacing since the fixed header is removed */
+#page-manager {
+    margin-top: 0 !important;
+}
+
+/* Explicit Notification Bell blocker */
+ytd-notification-topbar-button-renderer {
+    display: none !important;
+}
+
+/* ==========================================================
+   9. INEPT / INAPT SEARCH RESULTS & SIDEBAR EXTRAS
+   ========================================================== */
+/* Hide search bloat: "People also watched", "For you", "Related searches" */
+ytd-search ytd-shelf-renderer,
+ytd-search ytd-horizontal-card-list-renderer {
+    display: none !important;
+}
+
+/* Hide "More from YouTube" sidebar section */
+ytd-guide-section-renderer:has(a[href*="/premium"]),
+ytd-guide-section-renderer:has(a[href*="music.youtube.com"]) {
+    display: none !important;
+}
+
+/* Hide Subscriptions Link & Feed */
+ytd-guide-entry-renderer:has(a[href*="/feed/subscriptions"]),
+ytd-mini-guide-entry-renderer:has(a[href*="/feed/subscriptions"]) {
+    display: none !important;
+}
