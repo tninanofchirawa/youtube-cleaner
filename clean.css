@@ -40,6 +40,23 @@ ytd-donation-shelf-renderer,
 }
 
 /* ==========================================================
+   HIDE ENTIRE RIGHT SIDEBAR / SECONDARY COLUMN
+   ========================================================== */
+#secondary,
+#secondary-inner,
+ytd-watch-next-secondary-results-renderer,
+ytd-watch-flexy[flexy] #secondary.ytd-watch-flexy {
+    display: none !important;
+}
+
+/* Force main video area to take full center width */
+ytd-watch-flexy[flexy] #primary.ytd-watch-flexy {
+    max-width: 100% !important;
+    min-width: 100% !important;
+    margin-right: 0 !important;
+}
+
+/* ==========================================================
    3. END SCREEN & ANNOTATIONS
    ========================================================== */
 /* Hide End Screen Feed & Cards */
