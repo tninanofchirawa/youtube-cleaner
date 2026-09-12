@@ -16,44 +16,41 @@ ytd-browse[page-subtype="trending"] {
 }
 
 /* ==========================================================
-   2. VIDEO SIDEBAR (RECOMMENDED, LIVE CHAT, FUNDRAISER)
-   * Keeps Playlists intact
+   SIDEBAR HANDLING: NO PLAYLIST -> HIDE ENTIRELY & FULL WIDTH
    ========================================================== */
-/* Hide Recommended Next Videos */
-ytd-watch-next-secondary-results-renderer #items ytd-compact-video-renderer,
-ytd-watch-next-secondary-results-renderer #items ytd-compact-movie-renderer,
-ytd-watch-next-secondary-results-renderer #items ytd-shelf-renderer {
+
+/* If NO playlist is present in URL: obliterate sidebar & force 100% width */
+html:not([data-has-playlist="true"]) #secondary,
+html:not([data-has-playlist="true"]) #secondary-inner,
+html:not([data-has-playlist="true"]) ytd-watch-next-secondary-results-renderer,
+html:not([data-has-playlist="true"]) ytd-watch-flexy[flexy] #secondary.ytd-watch-flexy {
     display: none !important;
 }
 
-/* Hide Live Chat Frame */
-ytd-live-chat-frame,
-#chat-container,
-#chat {
-    display: none !important;
-}
-
-/* Hide Fundraisers / Donations */
-ytd-donation-shelf-renderer,
-#donation-shelf {
-    display: none !important;
-}
-
-/* ==========================================================
-   HIDE ENTIRE RIGHT SIDEBAR / SECONDARY COLUMN
-   ========================================================== */
-#secondary,
-#secondary-inner,
-ytd-watch-next-secondary-results-renderer,
-ytd-watch-flexy[flexy] #secondary.ytd-watch-flexy {
-    display: none !important;
-}
-
-/* Force main video area to take full center width */
-ytd-watch-flexy[flexy] #primary.ytd-watch-flexy {
+html:not([data-has-playlist="true"]) ytd-watch-flexy[flexy] #primary.ytd-watch-flexy {
     max-width: 100% !important;
     min-width: 100% !important;
     margin-right: 0 !important;
+}
+
+/* ==========================================================
+   SIDEBAR HANDLING: REAL PLAYLIST PRESENT
+   ========================================================== */
+
+/* When a real playlist exists: hide all recommendations & chips below it */
+html[data-has-playlist="true"] #secondary ytd-feed-filter-chip-bar-renderer,
+html[data-has-playlist="true"] #secondary yt-chip-cloud-renderer,
+html[data-has-playlist="true"] #secondary ytd-chip-cloud-chip-renderer,
+html[data-has-playlist="true"] #chips-wrapper,
+html[data-has-playlist="true"] #header #chips,
+html[data-has-playlist="true"] #secondary ytd-watch-next-secondary-results-renderer,
+html[data-has-playlist="true"] #secondary ytd-item-section-renderer:not(:has(ytd-playlist-panel-renderer)),
+html[data-has-playlist="true"] #secondary ytd-compact-video-renderer,
+html[data-has-playlist="true"] #secondary ytd-compact-radio-renderer,
+html[data-has-playlist="true"] #secondary ytd-compact-playlist-renderer,
+html[data-has-playlist="true"] #secondary ytd-lockup-view-model,
+html[data-has-playlist="true"] #secondary #items>ytd-video-renderer {
+    display: none !important;
 }
 
 /* ==========================================================
@@ -167,4 +164,108 @@ ytd-guide-section-renderer:has(a[href*="music.youtube.com"]) {
 ytd-guide-entry-renderer:has(a[href*="/feed/subscriptions"]),
 ytd-mini-guide-entry-renderer:has(a[href*="/feed/subscriptions"]) {
     display: none !important;
+}
+
+/* ==========================================================
+   10. LEFT NAVIGATION SIDEBAR / DRAWER
+   ==========================================================  */
+
+/* Completely remove the left navigation sidebar/drawer */
+ytd-guide-renderer,
+#guide-wrapper,
+#guide,
+tp-yt-app-drawer,
+ytd-mini-guide-renderer {
+    display: none !important;
+}
+
+/* Hide the top-left hamburger menu icon */
+yt-icon-button#guide-button {
+    display: none !important;
+}
+
+/* Collapse any leftover left margin on pages */
+ytd-app[guide-persistent-and-visible] {
+    --app-drawer-width: 0px !important;
+}
+
+/* ==========================================================
+   CLEAN CHANNEL LEFT-ALIGNMENT (WITHOUT BREAKING GRID)
+   ========================================================== */
+
+/* 1. Prevent the page-level renderer from centering */
+ytd-browse[page-subtype="channels"] ytd-two-column-browse-results-renderer.grid {
+    justify-content: flex-start !important;
+    max-width: 100% !important;
+}
+
+/* 2. Left-align the new channel page header view model */
+ytd-browse[page-subtype="channels"] yt-page-header-renderer,
+ytd-browse[page-subtype="channels"] .page-header-view-model-wiz {
+    padding-left: 24px !important;
+    padding-right: 24px !important;
+    max-width: 100% !important;
+}
+
+ytd-browse[page-subtype="channels"] .page-header-view-model-wiz__page-header-content {
+    margin-left: 0 !important;
+    margin-right: auto !important;
+    max-width: 100% !important;
+    justify-content: flex-start !important;
+}
+
+/* 3. Left-align the navigation tabs (Home, Videos, Shorts, etc.) */
+ytd-browse[page-subtype="channels"] yt-tab-group-shape,
+ytd-browse[page-subtype="channels"] #tabs-container,
+ytd-browse[page-subtype="channels"] tp-yt-paper-tabs {
+    margin-left: 0 !important;
+    justify-content: flex-start !important;
+}
+
+/* 4. Left-align the main video feed content below header */
+ytd-browse[page-subtype="channels"] #primary.ytd-two-column-browse-results-renderer {
+    margin-left: 0 !important;
+    margin-right: auto !important;
+    padding-left: 24px !important;
+    max-width: 100% !important;
+}
+
+ytd-browse[page-subtype="channels"] ytd-rich-grid-renderer {
+    margin-left: 0 !important;
+    margin-right: auto !important;
+    justify-content: flex-start !important;
+}
+
+/* ==========================================================
+   2. BLOCK END-OF-VIDEO RECOMMENDATIONS (ENDSCREEN TILES & OVERLAYS)
+   ========================================================== */
+/* Hide the endscreen cards, suggestion grid, and autoplay next tiles inside player */
+.ytp-endscreen-content,
+.ytp-ce-element,
+.ytp-ce-covering-overlay,
+.html5-endscreen,
+.ytp-show-tiles,
+.ytp-suggestion-set,
+.ytp-upnext,
+.ytp-autonav-endscreen-countdown-overlay {
+    display: none !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+    visibility: hidden !important;
+}
+
+
+/* ==========================================================
+   BLOCK HORIZONTAL RECOMMENDATION CAROUSEL / BELOW-PLAYER SHELF
+   ========================================================== */
+#primary #related,
+#primary ytd-item-section-renderer[section-identifier="related-items"],
+ytd-watch-next-secondary-results-renderer[watch-next-horizontal],
+ytd-horizontal-card-list-renderer,
+ytd-shelf-renderer:has(ytd-compact-video-renderer),
+ytd-item-section-renderer:has(ytd-compact-video-renderer),
+ytd-reel-shelf-renderer,
+#below ytd-item-section-renderer:not(:has(#comments)) {
+    display: none !important;
+    visibility: hidden !important;
 }
