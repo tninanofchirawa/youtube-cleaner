@@ -233,177 +233,245 @@
     }
 
     window.addEventListener('yt-navigate-finish', initAll);
-    /* ==========================================================
-   6. CUSTOM CENTERED SEARCH & TOPIC MIND-MAP
+/* ==========================================================
+   6. INTERACTIVE MIND-MAP (DRAGGABLE + ADD/DELETE TOPICS)
    ========================================================== */
-    function handleDirectSearch(query) {
-        var cleanQuery = query.trim();
-        if (cleanQuery.length > 0) {
-            window.location.href = '/results?search_query=' + encodeURIComponent(cleanQuery);
-        }
+function handleDirectSearch(query) {
+    var cleanQuery = query.trim();
+    if (cleanQuery.length > 0) {
+        window.location.href = '/results?search_query=' + encodeURIComponent(cleanQuery);
     }
+}
 
-    // Configurable topics: customize title, subtitle, link, and card color
-    var TOPICS_CONFIG = [{
-            id: 'topic-1',
-            title: 'A Topic 1',
-            sub: '(This is a Link)',
-            href: '/results?search_query=Real+Analysis',
-            bg: '#fca34d',
-            color: '#1a1a1a',
-            pos: {
-                left: '8vw',
-                top: '12vh'
-            }
-        },
-        {
-            id: 'topic-2',
-            title: 'A Topic 2',
-            sub: '(This is a Link)',
-            href: '/results?search_query=Linear+Algebra',
-            bg: '#70d34e',
-            color: '#1a1a1a',
-            pos: {
-                left: '9vw',
-                bottom: '10vh'
-            }
-        },
-        {
-            id: 'topic-3',
-            title: 'A Topic 3',
-            sub: '(This is a Link)',
-            href: '/results?search_query=Graph+Theory',
-            bg: '#d69cf7',
-            color: '#1a1a1a',
-            pos: {
-                left: '46vw',
-                bottom: '3vh'
-            }
-        },
-        {
-            id: 'topic-4',
-            title: 'A Topics 4',
-            sub: '(This is a Link)',
-            href: '/results?search_query=Data+Structures',
-            bg: '#53e5e5',
-            color: '#1a1a1a',
-            pos: {
-                right: '9vw',
-                bottom: '14vh'
-            }
-        },
-        {
-            id: 'topic-5',
-            title: 'A Topic 5',
-            sub: '(This is a Link)',
-            href: '/results?search_query=Complex+Analysis',
-            bg: '#75d64b',
-            color: '#1a1a1a',
-            pos: {
-                right: '8vw',
-                top: '7vh'
+var STORAGE_KEY = '__yt_mindmap_topics__';
+
+var DEFAULT_TOPICS = [
+    { id: 't-1', title: 'Real Analysis', sub: '(Topic 1)', query: 'Real Analysis', bg: '#fca34d', color: '#1a1a1a', x: 120, y: 100 },
+    { id: 't-2', title: 'Linear Algebra', sub: '(Topic 2)', query: 'Linear Algebra', bg: '#70d34e', color: '#1a1a1a', x: 130, y: 480 },
+    { id: 't-3', title: 'Graph Theory', sub: '(Topic 3)', query: 'Graph Theory', bg: '#d69cf7', color: '#1a1a1a', x: 640, y: 550 },
+    { id: 't-4', title: 'Data Structures', sub: '(Topic 4)', query: 'Data Structures', bg: '#53e5e5', color: '#1a1a1a', x: 1100, y: 500 },
+    { id: 't-5', title: 'Complex Analysis', sub: '(Topic 5)', query: 'Complex Analysis', bg: '#75d64b', color: '#1a1a1a', x: 1100, y: 90 }
+];
+
+function getSavedTopics() {
+    var raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) return DEFAULT_TOPICS;
+    try {
+        return JSON.parse(raw);
+    } catch (e) {
+        return DEFAULT_TOPICS;
+    }
+}
+
+function saveTopics(topics) {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(topics));
+}
+
+function drawConnectors() {
+    var svg = document.getElementById('custom-connectors-svg');
+    var cloud = document.querySelector('.custom-cloud-shape');
+    if (!svg || !cloud) return;
+
+    svg.innerHTML = '';
+    var cloudRect = cloud.getBoundingClientRect();
+    var cX = cloudRect.left + cloudRect.width / 2;
+    var cY = cloudRect.top + cloudRect.height / 2;
+
+    var topics = getSavedTopics();
+    topics.forEach(function (topic) {
+        var card = document.getElementById(topic.id);
+        if (!card) return;
+
+        var r = card.getBoundingClientRect();
+        var startX = r.left + r.width / 2;
+        var startY = r.top + r.height / 2;
+
+        var endX = startX < cX ? cloudRect.left + 40 : cloudRect.right - 40;
+        var endY = startY < cY ? cloudRect.top + 50 : cloudRect.bottom - 50;
+
+        var cp1X = (startX + endX) / 2;
+        var cp1Y = startY;
+        var cp2X = (startX + endX) / 2;
+        var cp2Y = endY;
+
+        var path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+        path.setAttribute('d', 'M ' + startX + ' ' + startY + ' C ' + cp1X + ' ' + cp1Y + ', ' + cp2X + ' ' + cp2Y + ', ' + endX + ' ' + endY);
+        path.setAttribute('stroke', '#333333');
+        path.setAttribute('stroke-width', '2');
+        path.setAttribute('stroke-dasharray', '5,4');
+        path.setAttribute('fill', 'none');
+        svg.appendChild(path);
+    });
+}
+
+function makeDraggable(card, topicId) {
+    var isDragging = false;
+    var startMouseX, startMouseY, startCardX, startCardY;
+    var hasMoved = false;
+
+    card.addEventListener('mousedown', function (e) {
+        if (e.target.classList.contains('topic-delete-btn')) return;
+        isDragging = true;
+        hasMoved = false;
+        startMouseX = e.clientX;
+        startMouseY = e.clientY;
+        startCardX = card.offsetLeft;
+        startCardY = card.offsetTop;
+        card.style.zIndex = '10';
+        e.preventDefault();
+    });
+
+    window.addEventListener('mousemove', function (e) {
+        if (!isDragging) return;
+        var dx = e.clientX - startMouseX;
+        var dy = e.clientY - startMouseY;
+        if (Math.abs(dx) > 3 || Math.abs(dy) > 3) hasMoved = true;
+
+        var newX = Math.max(10, Math.min(window.innerWidth - card.offsetWidth - 10, startCardX + dx));
+        var newY = Math.max(10, Math.min(window.innerHeight - card.offsetHeight - 10, startCardY + dy));
+
+        card.style.left = newX + 'px';
+        card.style.top = newY + 'px';
+        drawConnectors();
+    });
+
+    window.addEventListener('mouseup', function () {
+        if (!isDragging) return;
+        isDragging = false;
+        card.style.zIndex = '3';
+
+        if (hasMoved) {
+            var topics = getSavedTopics();
+            var target = topics.find(function (t) { return t.id === topicId; });
+            if (target) {
+                target.x = card.offsetLeft;
+                target.y = card.offsetTop;
+                saveTopics(topics);
             }
         }
-    ];
+    });
 
-    function drawConnectors() {
-        var svg = document.getElementById('custom-connectors-svg');
-        var cloud = document.querySelector('.custom-cloud-shape');
-        if (!svg || !cloud) return;
+    // Prevent navigation if the user was dragging the card
+    card.addEventListener('click', function (e) {
+        if (hasMoved) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+    });
+}
 
-        svg.innerHTML = '';
-        var cloudRect = cloud.getBoundingClientRect();
-        var cX = cloudRect.left + cloudRect.width / 2;
-        var cY = cloudRect.top + cloudRect.height / 2;
+function renderTopicCards(container) {
+    // Clear existing rendered cards
+    var existingCards = container.querySelectorAll('.custom-topic-card');
+    existingCards.forEach(function (c) { c.remove(); });
 
-        TOPICS_CONFIG.forEach(function (topic) {
-            var card = document.getElementById(topic.id);
-            if (!card) return;
+    var topics = getSavedTopics();
+    topics.forEach(function (t) {
+        var card = document.createElement('a');
+        card.id = t.id;
+        card.className = 'custom-topic-card';
+        card.href = '/results?search_query=' + encodeURIComponent(t.query);
+        card.style.backgroundColor = t.bg;
+        card.style.color = t.color;
+        card.style.left = t.x + 'px';
+        card.style.top = t.y + 'px';
 
-            var r = card.getBoundingClientRect();
-            var startX = r.left + r.width / 2;
-            var startY = r.top + r.height / 2;
+        card.innerHTML =
+            '<button class="topic-delete-btn" title="Delete topic">&times;</button>' +
+            '<div class="topic-title">' + t.title + '</div>' +
+            '<div class="topic-sub">' + t.sub + '</div>';
 
-            // Target edge of cloud
-            var endX = startX < cX ? cloudRect.left + 40 : cloudRect.right - 40;
-            var endY = startY < cY ? cloudRect.top + 50 : cloudRect.bottom - 50;
-
-            // Cubic bezier control points for curved paths
-            var cp1X = (startX + endX) / 2;
-            var cp1Y = startY;
-            var cp2X = (startX + endX) / 2;
-            var cp2Y = endY;
-
-            var path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-            path.setAttribute('d', 'M ' + startX + ' ' + startY + ' C ' + cp1X + ' ' + cp1Y + ', ' + cp2X + ' ' + cp2Y + ', ' + endX + ' ' + endY);
-            path.setAttribute('stroke', '#333333');
-            path.setAttribute('stroke-width', '2');
-            path.setAttribute('stroke-dasharray', '5,4');
-            path.setAttribute('fill', 'none');
-            svg.appendChild(path);
+        // Delete button listener
+        var delBtn = card.querySelector('.topic-delete-btn');
+        delBtn.addEventListener('click', function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+            var updated = getSavedTopics().filter(function (item) { return item.id !== t.id; });
+            saveTopics(updated);
+            renderTopicCards(container);
+            drawConnectors();
         });
+
+        makeDraggable(card, t.id);
+        container.appendChild(card);
+    });
+
+    drawConnectors();
+}
+
+function syncCenteredSearchUI() {
+    if (!document.body) return;
+
+    var isHome = window.location.pathname === '/' || window.location.pathname === '';
+    var existingContainer = document.getElementById('custom-mindmap-container');
+
+    if (!isHome) {
+        if (existingContainer) existingContainer.remove();
+        return;
     }
 
-    function syncCenteredSearchUI() {
-        if (!document.body) return;
+    if (existingContainer) return;
 
-        var isHome = window.location.pathname === '/' || window.location.pathname === '';
-        var existingContainer = document.getElementById('custom-mindmap-container');
+    var container = document.createElement('div');
+    container.id = 'custom-mindmap-container';
 
-        if (!isHome) {
-            if (existingContainer) existingContainer.remove();
-            return;
-        }
+    // SVG for connectors + Add Button + Cloud Center
+    container.innerHTML =
+        '<svg id="custom-connectors-svg"></svg>' +
+        '<button id="custom-add-topic-btn">+ Add Topic</button>' +
+        '<div class="custom-cloud-center">' +
+        '  <div class="custom-cloud-shape"></div>' +
+        '  <div class="custom-cloud-content">' +
+        '    <div class="custom-title-label">YouTube</div>' +
+        '    <div class="custom-input-wrapper">' +
+        '      <input id="custom-search-input" type="text" placeholder="Search" autocomplete="off" autocorrect="off" spellcheck="false" />' +
+        '    </div>' +
+        '  </div>' +
+        '</div>';
 
-        if (existingContainer) return;
+    document.body.appendChild(container);
 
-        var container = document.createElement('div');
-        container.id = 'custom-mindmap-container';
+    // Initial card rendering
+    renderTopicCards(container);
 
-        // SVG for connecting dashed lines
-        var svgHTML = '<svg id="custom-connectors-svg"></svg>';
-
-        // Topic Cards
-        var cardsHTML = TOPICS_CONFIG.map(function (t) {
-            var posStyles = Object.keys(t.pos).map(function (k) {
-                return k + ':' + t.pos[k];
-            }).join(';');
-            return '<a href="' + t.href + '" id="' + t.id + '" class="custom-topic-card" style="background:' + t.bg + ';color:' + t.color + ';' + posStyles + '">' +
-                '  <div class="topic-title">' + t.title + '</div>' +
-                '  <div class="topic-sub">' + t.sub + '</div>' +
-                '</a>';
-        }).join('');
-
-        // Cloud + Search Box
-        var cloudHTML =
-            '<div class="custom-cloud-center">' +
-            '  <div class="custom-cloud-shape"></div>' +
-            '  <div class="custom-cloud-content">' +
-            '    <div class="custom-title-label">YouTube</div>' +
-            '    <div class="custom-input-wrapper">' +
-            '      <input id="custom-search-input" type="text" placeholder="Search" autocomplete="off" autocorrect="off" spellcheck="false" />' +
-            '    </div>' +
-            '  </div>' +
-            '</div>';
-
-        container.innerHTML = svgHTML + cardsHTML + cloudHTML;
-        document.body.appendChild(container);
-
-        var inputEl = document.getElementById('custom-search-input');
-        if (inputEl) {
-            inputEl.addEventListener('keydown', function (e) {
-                if (e.key === 'Enter') {
-                    e.preventDefault();
-                    handleDirectSearch(inputEl.value);
-                }
-            });
-            setTimeout(function () {
-                inputEl.focus();
-            }, 150);
-        }
-
-        // Draw connector paths and update on resize
-        setTimeout(drawConnectors, 50);
-        window.addEventListener('resize', drawConnectors);
+    // Search input enter listener
+    var inputEl = document.getElementById('custom-search-input');
+    if (inputEl) {
+        inputEl.addEventListener('keydown', function (e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                handleDirectSearch(inputEl.value);
+            }
+        });
+        setTimeout(function () { inputEl.focus(); }, 150);
     }
+
+    // Add Topic Button listener
+    var addBtn = document.getElementById('custom-add-topic-btn');
+    addBtn.addEventListener('click', function () {
+        var name = prompt('Enter topic name (e.g. Topology):');
+        if (!name || !name.trim()) return;
+
+        var colors = ['#fca34d', '#70d34e', '#d69cf7', '#53e5e5', '#ff9494', '#ffd56b'];
+        var randomColor = colors[Math.floor(Math.random() * colors.length)];
+
+        var newTopic = {
+            id: 't-' + Date.now(),
+            title: name.trim(),
+            sub: '(Custom Link)',
+            query: name.trim(),
+            bg: randomColor,
+            color: '#1a1a1a',
+            x: 100,
+            y: 100
+        };
+
+        var topics = getSavedTopics();
+        topics.push(newTopic);
+        saveTopics(topics);
+        renderTopicCards(container);
+    });
+
+    window.addEventListener('resize', drawConnectors);
+}
 })();

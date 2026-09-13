@@ -434,3 +434,72 @@ ytd-browse[page-subtype="home"] {
     background-color: #ffffff !important;
     border-color: #000000 !important;
 }
+
+/* ==========================================================
+   INTERACTIVE MIND-MAP ENHANCEMENTS
+   ========================================================== */
+
+/* Cursor feedback for dragging */
+.custom-topic-card {
+    cursor: grab !important;
+    user-select: none !important;
+}
+
+.custom-topic-card:active {
+    cursor: grabbing !important;
+}
+
+/* Delete (X) button on top right of each card */
+.topic-delete-btn {
+    position: absolute !important;
+    top: 6px !important;
+    right: 8px !important;
+    background: rgba(0, 0, 0, 0.15) !important;
+    border: none !important;
+    border-radius: 50% !important;
+    width: 22px !important;
+    height: 22px !important;
+    line-height: 20px !important;
+    font-size: 16px !important;
+    color: #111111 !important;
+    cursor: pointer !important;
+    opacity: 0 !important;
+    transition: opacity 0.15s ease, background 0.15s ease !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    padding: 0 !important;
+}
+
+.custom-topic-card:hover .topic-delete-btn {
+    opacity: 1 !important;
+}
+
+.topic-delete-btn:hover {
+    background: rgba(0, 0, 0, 0.35) !important;
+    color: #ffffff !important;
+}
+
+/* Floating "+ Add Topic" button in the top-right corner */
+#custom-add-topic-btn {
+    position: fixed !important;
+    top: 20px !important;
+    right: 24px !important;
+    z-index: 100 !important;
+    padding: 8px 18px !important;
+    font-size: 14px !important;
+    font-weight: 600 !important;
+    font-family: sans-serif !important;
+    border: 1px solid #cccccc !important;
+    border-radius: 8px !important;
+    background: #ffffff !important;
+    color: #222222 !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1) !important;
+    cursor: pointer !important;
+    transition: background 0.15s ease, transform 0.15s ease !important;
+}
+
+#custom-add-topic-btn:hover {
+    background: #f0f0f0 !important;
+    transform: translateY(-1px) !important;
+}
