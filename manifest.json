@@ -1,6 +1,6 @@
 {
   "manifest_version": 3,
-  "name": "Unhook Personal Hardcode",
+  "name": "YouTube Cleaner - Minimal AI Interface",
   "version": "1.0",
   "description": "Minimal AI-Style YouTube Interface",
   "content_scripts": [{
