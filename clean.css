@@ -503,3 +503,360 @@ ytd-browse[page-subtype="home"] {
     background: #f0f0f0 !important;
     transform: translateY(-1px) !important;
 }
+
+/* ==========================================================
+   MIND-MAP WORKSPACE & CANVAS
+   ========================================================== */
+#custom-mindmap-container {
+    position: fixed !important;
+    inset: 0 !important;
+    width: 100vw !important;
+    height: 100vh !important;
+    z-index: 2147483647 !important;
+    background-color: #4a4a4a !important;
+    /* Dark Slate Gray canvas matching your screenshot */
+    overflow: hidden !important;
+    pointer-events: auto !important;
+}
+
+#custom-connectors-svg {
+    position: absolute !important;
+    inset: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    pointer-events: none !important;
+    z-index: 1 !important;
+}
+
+/* ==========================================================
+   GRADIENT CLOUD & SEARCH BAR
+   ========================================================== */
+.custom-cloud-center {
+    position: absolute !important;
+    top: 45% !important;
+    left: 50% !important;
+    transform: translate(-50%, -50%) !important;
+    width: 580px !important;
+    height: 340px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    z-index: 2 !important;
+}
+
+/* Vibrant Teal-to-Yellow Gradient Cloud */
+.custom-cloud-shape {
+    position: absolute !important;
+    inset: 0 !important;
+    background: linear-gradient(135deg, #18d4d7 0%, #6be3b6 45%, #fce762 100%) !important;
+    border-radius: 54% 46% 42% 58% / 60% 58% 42% 40% !important;
+    box-shadow: 0 16px 36px rgba(0, 0, 0, 0.25) !important;
+    z-index: 1 !important;
+}
+
+.custom-cloud-content {
+    position: relative !important;
+    z-index: 2 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    width: 82% !important;
+}
+
+.custom-brand-heading {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 12px !important;
+    margin-bottom: 14px !important;
+}
+
+.custom-yt-icon {
+    width: 44px !important;
+    height: 32px !important;
+}
+
+.custom-title-label {
+    font-size: 44px !important;
+    font-weight: 700 !important;
+    font-family: "Georgia", serif !important;
+    color: #111111 !important;
+    user-select: none !important;
+}
+
+.custom-input-wrapper {
+    width: 100% !important;
+}
+
+#custom-search-input {
+    width: 100% !important;
+    box-sizing: border-box !important;
+    height: 44px !important;
+    font-size: 16px !important;
+    padding: 0 14px !important;
+    background-color: #b7dbdf !important;
+    color: #111111 !important;
+    border: 2px solid #111111 !important;
+    border-radius: 0px !important;
+    outline: none !important;
+}
+
+#custom-search-input:focus {
+    background-color: #ffffff !important;
+    border-color: #000000 !important;
+}
+
+/* ==========================================================
+   TOPIC LINK CARDS & DELETE CONTROLS
+   ========================================================== */
+.custom-topic-card {
+    position: absolute !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: 175px !important;
+    height: 130px !important;
+    border-radius: 16px !important;
+    text-decoration: none !important;
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.18) !important;
+    z-index: 3 !important;
+    cursor: grab !important;
+    user-select: none !important;
+    transition: transform 0.15s ease, box-shadow 0.15s ease !important;
+}
+
+.custom-topic-card:active {
+    cursor: grabbing !important;
+}
+
+.topic-title {
+    font-family: "Georgia", serif !important;
+    font-size: 20px !important;
+    font-weight: bold !important;
+    margin-bottom: 6px !important;
+    text-align: center !important;
+    padding: 0 8px !important;
+}
+
+.topic-sub {
+    font-family: "Georgia", serif !important;
+    font-size: 15px !important;
+    opacity: 0.9 !important;
+}
+
+.topic-delete-btn {
+    position: absolute !important;
+    top: 6px !important;
+    right: 8px !important;
+    background: rgba(0, 0, 0, 0.2) !important;
+    border: none !important;
+    border-radius: 50% !important;
+    width: 24px !important;
+    height: 24px !important;
+    font-size: 16px !important;
+    color: #111111 !important;
+    cursor: pointer !important;
+    opacity: 0 !important;
+    transition: opacity 0.15s ease, background 0.15s ease !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    padding: 0 !important;
+}
+
+.custom-topic-card:hover .topic-delete-btn {
+    opacity: 1 !important;
+}
+
+.topic-delete-btn:hover {
+    background: #d93025 !important;
+    color: #ffffff !important;
+}
+
+/* ==========================================================
+   BOTTOM CONTROLS BAR
+   ========================================================== */
+.custom-bottom-bar {
+    position: absolute !important;
+    bottom: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    height: 64px !important;
+    background-color: #8f9296 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 48px !important;
+    z-index: 10 !important;
+}
+
+.tb-item-btn {
+    display: flex !important;
+    align-items: center !important;
+    gap: 12px !important;
+    background: none !important;
+    border: none !important;
+    cursor: pointer !important;
+    font-family: "Georgia", serif !important;
+    font-size: 18px !important;
+    color: #1a1a1a !important;
+    font-weight: 500 !important;
+    transition: opacity 0.15s ease, transform 0.15s ease !important;
+}
+
+.tb-item-btn:hover:not(.disabled-btn) {
+    opacity: 0.8 !important;
+    transform: translateY(-1px) !important;
+}
+
+.tb-bullet {
+    width: 22px !important;
+    height: 22px !important;
+    border-radius: 50% !important;
+    background: #dcd3db !important;
+    display: inline-block !important;
+}
+
+/* Disabled & Overstepping warning states */
+.disabled-btn {
+    opacity: 0.4 !important;
+    cursor: not-allowed !important;
+    filter: grayscale(1) !important;
+}
+
+#tb-warning-notice {
+    display: none;
+    position: absolute !important;
+    top: -34px !important;
+    background: #d93025 !important;
+    color: #ffffff !important;
+    padding: 4px 16px !important;
+    border-radius: 4px !important;
+    font-size: 13px !important;
+    font-family: sans-serif !important;
+    font-weight: bold !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2) !important;
+}
+
+/* ==========================================================
+   CHROME TAB-GROUP STYLE MODAL DIALOG
+   ========================================================== */
+#chrome-group-modal {
+    position: fixed !important;
+    inset: 0 !important;
+    background: rgba(0, 0, 0, 0.5) !important;
+    backdrop-filter: blur(4px) !important;
+    z-index: 2147483647 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+}
+
+.cg-modal-card {
+    width: 420px !important;
+    background: #ffffff !important;
+    border-radius: 16px !important;
+    padding: 24px !important;
+    box-shadow: 0 16px 36px rgba(0, 0, 0, 0.28) !important;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
+}
+
+.cg-modal-header {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    margin-bottom: 20px !important;
+}
+
+.cg-modal-title {
+    font-size: 20px !important;
+    font-weight: 700 !important;
+    color: #202124 !important;
+}
+
+.cg-modal-close {
+    background: none !important;
+    border: none !important;
+    font-size: 24px !important;
+    cursor: pointer !important;
+    color: #5f6368 !important;
+}
+
+.cg-input-label {
+    display: block !important;
+    font-size: 14px !important;
+    font-weight: 600 !important;
+    color: #3c4043 !important;
+    margin: 14px 0 6px 0 !important;
+}
+
+.cg-modal-body input {
+    width: 100% !important;
+    box-sizing: border-box !important;
+    height: 44px !important;
+    border-radius: 8px !important;
+    border: 1px solid #dadce0 !important;
+    padding: 0 12px !important;
+    font-size: 15px !important;
+    outline: none !important;
+    transition: border-color 0.15s ease !important;
+}
+
+.cg-modal-body input:focus {
+    border-color: #1a73e8 !important;
+    box-shadow: 0 0 0 2px rgba(26, 115, 232, 0.2) !important;
+}
+
+/* Horizontal Color Swatches */
+.cg-palette-wrapper {
+    display: flex !important;
+    gap: 12px !important;
+    margin-top: 10px !important;
+    flex-wrap: wrap !important;
+}
+
+.cg-color-circle {
+    width: 32px !important;
+    height: 32px !important;
+    border-radius: 50% !important;
+    cursor: pointer !important;
+    border: 2px solid transparent !important;
+    transition: transform 0.12s ease !important;
+}
+
+.cg-color-circle:hover {
+    transform: scale(1.15) !important;
+}
+
+.cg-color-circle.active {
+    border-color: #202124 !important;
+    transform: scale(1.15) !important;
+}
+
+/* Modal Buttons */
+.cg-modal-footer {
+    display: flex !important;
+    justify-content: flex-end !important;
+    gap: 12px !important;
+    margin-top: 24px !important;
+}
+
+.cg-btn {
+    padding: 10px 20px !important;
+    border-radius: 8px !important;
+    font-size: 14px !important;
+    font-weight: 600 !important;
+    cursor: pointer !important;
+    border: none !important;
+}
+
+.cg-btn-cancel {
+    background: #f1f3f4 !important;
+    color: #3c4043 !important;
+}
+
+.cg-btn-save {
+    background: #1a73e8 !important;
+    color: #ffffff !important;
+}
