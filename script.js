@@ -233,4 +233,177 @@
     }
 
     window.addEventListener('yt-navigate-finish', initAll);
+    /* ==========================================================
+   6. CUSTOM CENTERED SEARCH & TOPIC MIND-MAP
+   ========================================================== */
+    function handleDirectSearch(query) {
+        var cleanQuery = query.trim();
+        if (cleanQuery.length > 0) {
+            window.location.href = '/results?search_query=' + encodeURIComponent(cleanQuery);
+        }
+    }
+
+    // Configurable topics: customize title, subtitle, link, and card color
+    var TOPICS_CONFIG = [{
+            id: 'topic-1',
+            title: 'A Topic 1',
+            sub: '(This is a Link)',
+            href: '/results?search_query=Real+Analysis',
+            bg: '#fca34d',
+            color: '#1a1a1a',
+            pos: {
+                left: '8vw',
+                top: '12vh'
+            }
+        },
+        {
+            id: 'topic-2',
+            title: 'A Topic 2',
+            sub: '(This is a Link)',
+            href: '/results?search_query=Linear+Algebra',
+            bg: '#70d34e',
+            color: '#1a1a1a',
+            pos: {
+                left: '9vw',
+                bottom: '10vh'
+            }
+        },
+        {
+            id: 'topic-3',
+            title: 'A Topic 3',
+            sub: '(This is a Link)',
+            href: '/results?search_query=Graph+Theory',
+            bg: '#d69cf7',
+            color: '#1a1a1a',
+            pos: {
+                left: '46vw',
+                bottom: '3vh'
+            }
+        },
+        {
+            id: 'topic-4',
+            title: 'A Topics 4',
+            sub: '(This is a Link)',
+            href: '/results?search_query=Data+Structures',
+            bg: '#53e5e5',
+            color: '#1a1a1a',
+            pos: {
+                right: '9vw',
+                bottom: '14vh'
+            }
+        },
+        {
+            id: 'topic-5',
+            title: 'A Topic 5',
+            sub: '(This is a Link)',
+            href: '/results?search_query=Complex+Analysis',
+            bg: '#75d64b',
+            color: '#1a1a1a',
+            pos: {
+                right: '8vw',
+                top: '7vh'
+            }
+        }
+    ];
+
+    function drawConnectors() {
+        var svg = document.getElementById('custom-connectors-svg');
+        var cloud = document.querySelector('.custom-cloud-shape');
+        if (!svg || !cloud) return;
+
+        svg.innerHTML = '';
+        var cloudRect = cloud.getBoundingClientRect();
+        var cX = cloudRect.left + cloudRect.width / 2;
+        var cY = cloudRect.top + cloudRect.height / 2;
+
+        TOPICS_CONFIG.forEach(function (topic) {
+            var card = document.getElementById(topic.id);
+            if (!card) return;
+
+            var r = card.getBoundingClientRect();
+            var startX = r.left + r.width / 2;
+            var startY = r.top + r.height / 2;
+
+            // Target edge of cloud
+            var endX = startX < cX ? cloudRect.left + 40 : cloudRect.right - 40;
+            var endY = startY < cY ? cloudRect.top + 50 : cloudRect.bottom - 50;
+
+            // Cubic bezier control points for curved paths
+            var cp1X = (startX + endX) / 2;
+            var cp1Y = startY;
+            var cp2X = (startX + endX) / 2;
+            var cp2Y = endY;
+
+            var path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+            path.setAttribute('d', 'M ' + startX + ' ' + startY + ' C ' + cp1X + ' ' + cp1Y + ', ' + cp2X + ' ' + cp2Y + ', ' + endX + ' ' + endY);
+            path.setAttribute('stroke', '#333333');
+            path.setAttribute('stroke-width', '2');
+            path.setAttribute('stroke-dasharray', '5,4');
+            path.setAttribute('fill', 'none');
+            svg.appendChild(path);
+        });
+    }
+
+    function syncCenteredSearchUI() {
+        if (!document.body) return;
+
+        var isHome = window.location.pathname === '/' || window.location.pathname === '';
+        var existingContainer = document.getElementById('custom-mindmap-container');
+
+        if (!isHome) {
+            if (existingContainer) existingContainer.remove();
+            return;
+        }
+
+        if (existingContainer) return;
+
+        var container = document.createElement('div');
+        container.id = 'custom-mindmap-container';
+
+        // SVG for connecting dashed lines
+        var svgHTML = '<svg id="custom-connectors-svg"></svg>';
+
+        // Topic Cards
+        var cardsHTML = TOPICS_CONFIG.map(function (t) {
+            var posStyles = Object.keys(t.pos).map(function (k) {
+                return k + ':' + t.pos[k];
+            }).join(';');
+            return '<a href="' + t.href + '" id="' + t.id + '" class="custom-topic-card" style="background:' + t.bg + ';color:' + t.color + ';' + posStyles + '">' +
+                '  <div class="topic-title">' + t.title + '</div>' +
+                '  <div class="topic-sub">' + t.sub + '</div>' +
+                '</a>';
+        }).join('');
+
+        // Cloud + Search Box
+        var cloudHTML =
+            '<div class="custom-cloud-center">' +
+            '  <div class="custom-cloud-shape"></div>' +
+            '  <div class="custom-cloud-content">' +
+            '    <div class="custom-title-label">YouTube</div>' +
+            '    <div class="custom-input-wrapper">' +
+            '      <input id="custom-search-input" type="text" placeholder="Search" autocomplete="off" autocorrect="off" spellcheck="false" />' +
+            '    </div>' +
+            '  </div>' +
+            '</div>';
+
+        container.innerHTML = svgHTML + cardsHTML + cloudHTML;
+        document.body.appendChild(container);
+
+        var inputEl = document.getElementById('custom-search-input');
+        if (inputEl) {
+            inputEl.addEventListener('keydown', function (e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    handleDirectSearch(inputEl.value);
+                }
+            });
+            setTimeout(function () {
+                inputEl.focus();
+            }, 150);
+        }
+
+        // Draw connector paths and update on resize
+        setTimeout(drawConnectors, 50);
+        window.addEventListener('resize', drawConnectors);
+    }
 })();

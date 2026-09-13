@@ -306,3 +306,131 @@ ytd-app {
 ytd-browse[page-subtype="home"] {
     display: none !important;
 }
+
+/* ==========================================================
+   MIND-MAP WORKSPACE & CONNECTORS
+   ========================================================== */
+#custom-mindmap-container {
+    position: fixed !important;
+    inset: 0 !important;
+    width: 100vw !important;
+    height: 100vh !important;
+    z-index: 2147483647 !important;
+    background-color: #f7f7f9 !important;
+    /* Clean light canvas matching the sketch */
+    overflow: hidden !important;
+    pointer-events: auto !important;
+}
+
+#custom-connectors-svg {
+    position: absolute !important;
+    inset: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    pointer-events: none !important;
+    z-index: 1 !important;
+}
+
+/* ==========================================================
+   TOPIC LINK CARDS
+   ========================================================== */
+.custom-topic-card {
+    position: absolute !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: 170px !important;
+    height: 125px !important;
+    border-radius: 16px !important;
+    text-decoration: none !important;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08) !important;
+    z-index: 3 !important;
+    transition: transform 0.15s ease, box-shadow 0.15s ease !important;
+    cursor: pointer !important;
+}
+
+.custom-topic-card:hover {
+    transform: translateY(-3px) scale(1.03) !important;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.14) !important;
+}
+
+.topic-title {
+    font-family: "Georgia", serif !important;
+    font-size: 20px !important;
+    font-weight: bold !important;
+    margin-bottom: 6px !important;
+}
+
+.topic-sub {
+    font-family: "Georgia", serif !important;
+    font-size: 15px !important;
+    opacity: 0.9 !important;
+}
+
+/* ==========================================================
+   CENTER CLOUD & EMBEDDED SEARCH BAR
+   ========================================================== */
+.custom-cloud-center {
+    position: absolute !important;
+    top: 50% !important;
+    left: 50% !important;
+    transform: translate(-50%, -50%) !important;
+    width: 580px !important;
+    height: 360px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    z-index: 2 !important;
+}
+
+/* Cloud geometry drawn via multi-radial border-radius */
+.custom-cloud-shape {
+    position: absolute !important;
+    inset: 0 !important;
+    background: #cfd1d3 !important;
+    border-radius: 54% 46% 42% 58% / 60% 58% 42% 40% !important;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.06) !important;
+    z-index: 1 !important;
+}
+
+.custom-cloud-content {
+    position: relative !important;
+    z-index: 2 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    width: 82% !important;
+}
+
+.custom-title-label {
+    font-size: 38px !important;
+    font-weight: 700 !important;
+    font-family: "Georgia", serif !important;
+    color: #111111 !important;
+    margin-bottom: 18px !important;
+    user-select: none !important;
+}
+
+.custom-input-wrapper {
+    width: 100% !important;
+}
+
+#custom-search-input {
+    width: 100% !important;
+    box-sizing: border-box !important;
+    height: 44px !important;
+    font-size: 16px !important;
+    padding: 0 14px !important;
+    background-color: #dcdedf !important;
+    color: #111111 !important;
+    border: 2px solid #222222 !important;
+    border-radius: 0px !important;
+    /* Flat rectangle matching diagram */
+    outline: none !important;
+}
+
+#custom-search-input:focus {
+    background-color: #ffffff !important;
+    border-color: #000000 !important;
+}
