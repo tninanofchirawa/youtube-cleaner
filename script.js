@@ -103,12 +103,10 @@
        4. SEARCH QUERY INTERCEPTION & FEED SCRUBBING
        ========================================================== */
     function scrubSearchFeed() {
-        // 1. If currently on a results page, inspect the query parameter itself
         if (window.location.pathname.startsWith('/results')) {
             var searchParams = new URLSearchParams(window.location.search);
             var query = (searchParams.get('search_query') || '').toLowerCase();
 
-            // If the searched string itself contains banned words, wipe the results feed entirely
             if (BANNED_PATTERNS.some(function (regex) {
                     return regex.test(query);
                 })) {
@@ -119,7 +117,6 @@
                 return;
             }
 
-            // 2. Otherwise scrub individual video / channel / shelf cards matching banned terms
             var cards = document.querySelectorAll(
                 'ytd-video-renderer, ytd-channel-renderer, ytd-reel-shelf-renderer, ytd-shelf-renderer, ytd-lockup-view-model, yt-lockup-view-model'
             );
@@ -129,12 +126,11 @@
                 if (BANNED_PATTERNS.some(function (regex) {
                         return regex.test(rawText);
                     })) {
-                    card.remove(); // Completely strips the card from the DOM
+                    card.remove();
                 }
             });
         }
 
-        // 3. Scrub search suggestion popup dropdown items as the user types
         var suggestions = document.querySelectorAll('.sbsb_c, .sbct, yt-searchbox yt-suggestion');
         suggestions.forEach(function (item) {
             var text = item.innerText || '';
@@ -172,14 +168,69 @@
         subtree: true
     });
 
-    window.addEventListener('yt-navigate-finish', function () {
+    /* ==========================================================
+       6. CUSTOM CENTERED SEARCH (DIRECT URL REDIRECTION)
+       ========================================================== */
+    function handleDirectSearch(query) {
+        var cleanQuery = query.trim();
+        if (cleanQuery.length > 0) {
+            window.location.href = '/results?search_query=' + encodeURIComponent(cleanQuery);
+        }
+    }
+
+    function syncCenteredSearchUI() {
+        if (!document.body) return;
+
+        var isHome = window.location.pathname === '/' || window.location.pathname === '';
+        var existingBox = document.getElementById('custom-minimal-search-layer');
+
+        if (!isHome) {
+            if (existingBox) existingBox.remove();
+            return;
+        }
+
+        if (existingBox) return;
+
+        var searchLayer = document.createElement('div');
+        searchLayer.id = 'custom-minimal-search-layer';
+        searchLayer.innerHTML =
+            '<div class="custom-title-label">YouTube</div>' +
+            '<div class="custom-input-wrapper">' +
+            '  <input id="custom-search-input" type="text" placeholder="Search" autocomplete="off" autocorrect="off" spellcheck="false" />' +
+            '</div>';
+
+        document.body.appendChild(searchLayer);
+
+        var inputEl = document.getElementById('custom-search-input');
+        if (inputEl) {
+            inputEl.addEventListener('keydown', function (e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    handleDirectSearch(inputEl.value);
+                }
+            });
+
+            setTimeout(function () {
+                inputEl.focus();
+            }, 150);
+        }
+    }
+
+    /* ==========================================================
+       7. LIFECYCLE INITIALIZATION
+       ========================================================== */
+    function initAll() {
         updatePlaylistState();
         disableAutoplay();
         scrubSearchFeed();
-    });
+        syncCenteredSearchUI();
+    }
 
-    // Initial execution
-    updatePlaylistState();
-    disableAutoplay();
-    scrubSearchFeed();
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initAll);
+    } else {
+        initAll();
+    }
+
+    window.addEventListener('yt-navigate-finish', initAll);
 })();

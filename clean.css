@@ -1,7 +1,7 @@
 /* ==========================================================
    1. HOME FEED & EXPLORE / TRENDING
    ========================================================== */
-/* Hide Home Feed */
+/* Hide Home Feed completely */
 ytd-browse[page-subtype="home"] #contents,
 ytd-browse[page-subtype="home"] ytd-rich-grid-renderer {
     display: none !important;
@@ -16,10 +16,101 @@ ytd-browse[page-subtype="trending"] {
 }
 
 /* ==========================================================
-   SIDEBAR HANDLING: NO PLAYLIST -> HIDE ENTIRELY & FULL WIDTH
+   2. MINIMAL AI-STYLE SEARCH BAR (CENTERED ON HOMEPAGE)
    ========================================================== */
 
-/* If NO playlist is present in URL: obliterate sidebar & force 100% width */
+/* ==========================================================
+   GLOBAL HEADER & MASTHEAD REMOVAL (EVERYWHERE)
+   ========================================================== */
+
+/* Completely wipe YouTube's top masthead across all pages */
+#masthead-container,
+ytd-masthead,
+#masthead {
+    display: none !important;
+    visibility: hidden !important;
+    height: 0 !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+}
+
+/* Remove the top margin placeholder so video/results sit flush */
+#page-manager {
+    margin-top: 0 !important;
+}
+
+/* ==========================================================
+   HOMEPAGE CUSTOM CENTERED SEARCH
+   ========================================================== */
+
+/* Pinned to dead center of the viewport */
+#custom-minimal-search-layer {
+    position: fixed !important;
+    top: 50% !important;
+    left: 50% !important;
+    transform: translate(-50%, -50%) !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: 90% !important;
+    max-width: 680px !important;
+    z-index: 2147483647 !important;
+    pointer-events: auto !important;
+}
+
+/* YouTube Title */
+.custom-title-label {
+    font-size: 42px !important;
+    font-weight: 700 !important;
+    font-family: "Roboto", "YouTube Sans", sans-serif !important;
+    color: var(--yt-spec-text-primary, #ffffff) !important;
+    margin-bottom: 22px !important;
+    letter-spacing: -0.5px !important;
+    user-select: none !important;
+}
+
+/* Input container wrapper */
+.custom-input-wrapper {
+    width: 100% !important;
+}
+
+/* Rectangular clean search input */
+#custom-search-input {
+    width: 100% !important;
+    box-sizing: border-box !important;
+    height: 50px !important;
+    font-size: 17px !important;
+    padding: 0 16px !important;
+    background-color: var(--yt-spec-base-background, #0f0f0f) !important;
+    color: var(--yt-spec-text-primary, #ffffff) !important;
+    border: 2px solid var(--yt-spec-text-primary, #ffffff) !important;
+    border-radius: 4px !important;
+    outline: none !important;
+    box-shadow: none !important;
+}
+
+#custom-search-input:focus {
+    border-color: #3ea6ff !important;
+}
+
+/* ==========================================================
+   4. SUPPRESS ALL SEARCH HISTORY & AUTOCOMPLETE SUGGESTIONS
+   ========================================================== */
+.gstl_50,
+.sbdd_a,
+ul.sbsb_b,
+div.sbsb_a {
+    display: none !important;
+    visibility: hidden !important;
+    height: 0 !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+}
+
+/* ==========================================================
+   5. SIDEBAR HANDLING: NO PLAYLIST -> HIDE ENTIRELY & FULL WIDTH
+   ========================================================== */
 html:not([data-has-playlist="true"]) #secondary,
 html:not([data-has-playlist="true"]) #secondary-inner,
 html:not([data-has-playlist="true"]) ytd-watch-next-secondary-results-renderer,
@@ -34,10 +125,8 @@ html:not([data-has-playlist="true"]) ytd-watch-flexy[flexy] #primary.ytd-watch-f
 }
 
 /* ==========================================================
-   SIDEBAR HANDLING: REAL PLAYLIST PRESENT
+   6. SIDEBAR HANDLING: REAL PLAYLIST PRESENT
    ========================================================== */
-
-/* When a real playlist exists: hide all recommendations & chips below it */
 html[data-has-playlist="true"] #secondary ytd-feed-filter-chip-bar-renderer,
 html[data-has-playlist="true"] #secondary yt-chip-cloud-renderer,
 html[data-has-playlist="true"] #secondary ytd-chip-cloud-chip-renderer,
@@ -54,18 +143,24 @@ html[data-has-playlist="true"] #secondary #items>ytd-video-renderer {
 }
 
 /* ==========================================================
-   3. END SCREEN & ANNOTATIONS
+   7. END SCREEN & ANNOTATIONS & SUGGESTIONS
    ========================================================== */
-/* Hide End Screen Feed & Cards */
 .ytp-ce-element,
 .ytp-ce-covering-overlay,
 .ytp-ce-element-shadow,
 .ytp-endscreen-content,
-.ytp-autonav-endscreen-countdown-container {
+.ytp-autonav-endscreen-countdown-container,
+.html5-endscreen,
+.ytp-show-tiles,
+.ytp-suggestion-set,
+.ytp-upnext,
+.ytp-autonav-endscreen-countdown-overlay {
     display: none !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+    visibility: hidden !important;
 }
 
-/* Disable/Hide Annotations & Interactive Overlays */
 .ytp-cards-teaser,
 .ytp-cards-button,
 .annotation {
@@ -73,33 +168,23 @@ html[data-has-playlist="true"] #secondary #items>ytd-video-renderer {
 }
 
 /* ==========================================================
-   4. SHORTS & MIXES
+   8. SHORTS & MIXES
    ========================================================== */
-/* Hide Shorts across Sidebar, Navigation & Feeds */
 ytd-guide-entry-renderer:has(a[title="Shorts"]),
 ytd-mini-guide-entry-renderer[aria-label="Shorts"],
 ytd-reel-shelf-renderer,
 ytd-rich-shelf-renderer[is-shorts],
-#shorts-container {
-    display: none !important;
-}
-
-/* Hide Mixes / Auto-generated Radio playlists */
+#shorts-container,
 ytd-compact-radio-renderer,
 ytd-radio-renderer {
     display: none !important;
 }
 
 /* ==========================================================
-   5. COMMENTS & PROFILE PHOTOS
+   9. COMMENTS & PROFILE PHOTOS
    ========================================================== */
-/* Hide Entire Comments Section */
 ytd-comments#comments,
-#comment-section-renderer {
-    display: none !important;
-}
-
-/* Hide Profile Photos (if loaded in chat or other contexts) */
+#comment-section-renderer,
 #author-thumbnail,
 yt-avatar-shape,
 yt-img-shadow.ytd-comment-view-model {
@@ -107,99 +192,56 @@ yt-img-shadow.ytd-comment-view-model {
 }
 
 /* ==========================================================
-   6. MERCH, TICKETS & OFFERS
+   10. MERCH, TICKETS & OFFERS & ACTION BUTTONS
    ========================================================== */
 #merchandise-shelf,
 ytd-merchandise-shelf-renderer,
 ytd-ticket-shelf-renderer,
-ytd-offer-module-renderer {
-    display: none !important;
-}
-
-/* ==========================================================
-   7. VIDEO INFO / ACTIONS
-   * Buttons bar hidden; Channel & Description remain visible
-   ========================================================== */
-/* Hide Buttons Bar (Like, Dislike, Share, Clip, Thanks, Download) */
+ytd-offer-module-renderer,
 #top-row ytd-menu-renderer,
 #actions.ytd-watch-metadata ytd-menu-renderer {
     display: none !important;
 }
 
 /* ==========================================================
-   8. TOP HEADER & NOTIFICATIONS
+   11. SEARCH RESULTS CLEANUP & RECOMMENDATIONS SHELF
    ========================================================== */
-/* Hide Top Navigation Header completely */
-#masthead-container,
-ytd-masthead {
-    display: none !important;
-}
-
-/* Adjust page spacing since the fixed header is removed */
-#page-manager {
-    margin-top: 0 !important;
-}
-
-/* Explicit Notification Bell blocker */
-ytd-notification-topbar-button-renderer {
-    display: none !important;
-}
-
-/* ==========================================================
-   9. INEPT / INAPT SEARCH RESULTS & SIDEBAR EXTRAS
-   ========================================================== */
-/* Hide search bloat: "People also watched", "For you", "Related searches" */
 ytd-search ytd-shelf-renderer,
-ytd-search ytd-horizontal-card-list-renderer {
+ytd-search ytd-horizontal-card-list-renderer,
+#primary #related,
+#primary ytd-item-section-renderer[section-identifier="related-items"],
+ytd-watch-next-secondary-results-renderer[watch-next-horizontal],
+ytd-shelf-renderer:has(ytd-compact-video-renderer),
+ytd-item-section-renderer:has(ytd-compact-video-renderer),
+#below ytd-item-section-renderer:not(:has(#comments)) {
     display: none !important;
-}
-
-/* Hide "More from YouTube" sidebar section */
-ytd-guide-section-renderer:has(a[href*="/premium"]),
-ytd-guide-section-renderer:has(a[href*="music.youtube.com"]) {
-    display: none !important;
-}
-
-/* Hide Subscriptions Link & Feed */
-ytd-guide-entry-renderer:has(a[href*="/feed/subscriptions"]),
-ytd-mini-guide-entry-renderer:has(a[href*="/feed/subscriptions"]) {
-    display: none !important;
+    visibility: hidden !important;
 }
 
 /* ==========================================================
-   10. LEFT NAVIGATION SIDEBAR / DRAWER
-   ==========================================================  */
-
-/* Completely remove the left navigation sidebar/drawer */
+   12. LEFT NAVIGATION SIDEBAR / DRAWER
+   ========================================================== */
 ytd-guide-renderer,
 #guide-wrapper,
 #guide,
 tp-yt-app-drawer,
-ytd-mini-guide-renderer {
-    display: none !important;
-}
-
-/* Hide the top-left hamburger menu icon */
+ytd-mini-guide-renderer,
 yt-icon-button#guide-button {
     display: none !important;
 }
 
-/* Collapse any leftover left margin on pages */
 ytd-app[guide-persistent-and-visible] {
     --app-drawer-width: 0px !important;
 }
 
 /* ==========================================================
-   CLEAN CHANNEL LEFT-ALIGNMENT (WITHOUT BREAKING GRID)
+   13. CHANNEL PAGE CLEAN LEFT-ALIGNMENT
    ========================================================== */
-
-/* 1. Prevent the page-level renderer from centering */
 ytd-browse[page-subtype="channels"] ytd-two-column-browse-results-renderer.grid {
     justify-content: flex-start !important;
     max-width: 100% !important;
 }
 
-/* 2. Left-align the new channel page header view model */
 ytd-browse[page-subtype="channels"] yt-page-header-renderer,
 ytd-browse[page-subtype="channels"] .page-header-view-model-wiz {
     padding-left: 24px !important;
@@ -214,7 +256,6 @@ ytd-browse[page-subtype="channels"] .page-header-view-model-wiz__page-header-con
     justify-content: flex-start !important;
 }
 
-/* 3. Left-align the navigation tabs (Home, Videos, Shorts, etc.) */
 ytd-browse[page-subtype="channels"] yt-tab-group-shape,
 ytd-browse[page-subtype="channels"] #tabs-container,
 ytd-browse[page-subtype="channels"] tp-yt-paper-tabs {
@@ -222,7 +263,6 @@ ytd-browse[page-subtype="channels"] tp-yt-paper-tabs {
     justify-content: flex-start !important;
 }
 
-/* 4. Left-align the main video feed content below header */
 ytd-browse[page-subtype="channels"] #primary.ytd-two-column-browse-results-renderer {
     margin-left: 0 !important;
     margin-right: auto !important;
@@ -236,36 +276,33 @@ ytd-browse[page-subtype="channels"] ytd-rich-grid-renderer {
     justify-content: flex-start !important;
 }
 
+
 /* ==========================================================
-   2. BLOCK END-OF-VIDEO RECOMMENDATIONS (ENDSCREEN TILES & OVERLAYS)
+   KILL FLASH OF UNSTYLED CONTENT (SKELETONS & PLACEHOLDERS)
    ========================================================== */
-/* Hide the endscreen cards, suggestion grid, and autoplay next tiles inside player */
-.ytp-endscreen-content,
-.ytp-ce-element,
-.ytp-ce-covering-overlay,
-.html5-endscreen,
-.ytp-show-tiles,
-.ytp-suggestion-set,
-.ytp-upnext,
-.ytp-autonav-endscreen-countdown-overlay {
+
+/* Instantly suppress all pre-render placeholders & loading skeletons */
+#masthead-skeleton,
+#home-page-skeleton,
+#guide-skeleton,
+ytd-app>#masthead-container,
+ytd-app #ghost-cards,
+.watch-skeleton,
+.skeleton-bg-color,
+.masthead-skeleton-icon {
     display: none !important;
     opacity: 0 !important;
-    pointer-events: none !important;
     visibility: hidden !important;
 }
 
+/* Force dark canvas background instantly to prevent white/gray shimmer flash */
+html,
+body,
+ytd-app {
+    background: #0f0f0f !important;
+}
 
-/* ==========================================================
-   BLOCK HORIZONTAL RECOMMENDATION CAROUSEL / BELOW-PLAYER SHELF
-   ========================================================== */
-#primary #related,
-#primary ytd-item-section-renderer[section-identifier="related-items"],
-ytd-watch-next-secondary-results-renderer[watch-next-horizontal],
-ytd-horizontal-card-list-renderer,
-ytd-shelf-renderer:has(ytd-compact-video-renderer),
-ytd-item-section-renderer:has(ytd-compact-video-renderer),
-ytd-reel-shelf-renderer,
-#below ytd-item-section-renderer:not(:has(#comments)) {
+/* Hide the homepage browsing container before its cards can even construct */
+ytd-browse[page-subtype="home"] {
     display: none !important;
-    visibility: hidden !important;
 }
