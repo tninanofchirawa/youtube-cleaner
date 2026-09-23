@@ -1,0 +1,24 @@
+/* ==========================================================================
+   YOUTUBE CLEANER - Playlist Overview Page Layout
+   ========================================================================== */
+
+/* Ensure Playlist Page root & inner two-column elements remain 100% visible */
+ytd-browse[page-subtype="playlist"],
+ytd-browse[page-subtype="playlist"] ytd-two-column-browse-results-renderer,
+ytd-browse[page-subtype="playlist"] #sidebar,
+ytd-browse[page-subtype="playlist"] ytd-playlist-header-renderer,
+ytd-browse[page-subtype="playlist"] #primary,
+ytd-browse[page-subtype="playlist"] ytd-playlist-video-list-renderer {
+    visibility: visible !important;
+    opacity: 1 !important;
+}
+
+/* Playlist video item hover styling */
+ytd-browse[page-subtype="playlist"] ytd-playlist-video-renderer {
+    border-radius: 12px !important;
+    transition: background 0.15s ease !important;
+}
+
+ytd-browse[page-subtype="playlist"] ytd-playlist-video-renderer:hover {
+    background: var(--yt-cleaner-table-hover) !important;
+}

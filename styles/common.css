@@ -1,0 +1,121 @@
+/* ==========================================================================
+   YOUTUBE CLEANER - Common System Theme & Global Resets
+   ========================================================================== */
+
+/* 1. SYSTEM THEME COLOR DEFINITIONS (AUTO ADAPTS TO OS SYSTEM THEME) */
+:root {
+    /* Default Dark Mode Color Tokens */
+    --yt-cleaner-bg: #141518;
+    --yt-cleaner-cloud-bg: rgba(34, 36, 44, 0.88);
+    --yt-cleaner-cloud-border: rgba(255, 255, 255, 0.22);
+    --yt-cleaner-cloud-shadow: rgba(0, 0, 0, 0.45);
+    --yt-cleaner-text-primary: #f8f9fa;
+    --yt-cleaner-input-bg: rgba(18, 19, 22, 0.9);
+    --yt-cleaner-input-border: #3d414d;
+    --yt-cleaner-input-focus-border: #3ea6ff;
+    --yt-cleaner-bottom-bar-bg: rgba(18, 19, 22, 0.94);
+    --yt-cleaner-bottom-bar-text: #e0e3ea;
+    --yt-cleaner-bullet-bg: #3ea6ff;
+    --yt-cleaner-connector-stroke: #7c859c;
+    --yt-cleaner-modal-bg: #22242a;
+    --yt-cleaner-modal-text: #f0f2f5;
+    --yt-cleaner-modal-input-bg: #16171a;
+    --yt-cleaner-modal-input-border: #3c3f4a;
+    --yt-cleaner-subtext: #9aa0b4;
+    --yt-cleaner-table-hover: #2b2e36;
+    --yt-cleaner-table-border: #333642;
+}
+
+/* Automatically switch tokens when System OS Light Mode is active */
+@media (prefers-color-scheme: light) {
+    :root {
+        --yt-cleaner-bg: #f2f4f8;
+        --yt-cleaner-cloud-bg: rgba(255, 255, 255, 0.9);
+        --yt-cleaner-cloud-border: rgba(0, 0, 0, 0.12);
+        --yt-cleaner-cloud-shadow: rgba(0, 0, 0, 0.12);
+        --yt-cleaner-text-primary: #1a1a1a;
+        --yt-cleaner-input-bg: #edf0f5;
+        --yt-cleaner-input-border: #c8cbd6;
+        --yt-cleaner-input-focus-border: #1a73e8;
+        --yt-cleaner-bottom-bar-bg: rgba(232, 235, 240, 0.94);
+        --yt-cleaner-bottom-bar-text: #2a2c34;
+        --yt-cleaner-bullet-bg: #1a73e8;
+        --yt-cleaner-connector-stroke: #5c6275;
+        --yt-cleaner-modal-bg: #ffffff;
+        --yt-cleaner-modal-text: #202124;
+        --yt-cleaner-modal-input-bg: #ffffff;
+        --yt-cleaner-modal-input-border: #dadce0;
+        --yt-cleaner-subtext: #606470;
+        --yt-cleaner-table-hover: #f1f3f8;
+        --yt-cleaner-table-border: #e2e5ec;
+    }
+}
+
+/* 2. GLOBAL BACKGROUND & CANVAS ENFORCEMENT */
+html,
+body,
+ytd-app,
+#page-manager {
+    background: var(--yt-cleaner-bg) !important;
+}
+
+#page-manager {
+    margin-top: 0 !important;
+}
+
+/* Hide Explore / Trending entries in left sidebar */
+ytd-guide-section-renderer:has(a[href*="/feed/trending"]),
+ytd-guide-entry-renderer:has(a[href*="/feed/trending"]),
+ytd-browse[page-subtype="trending"] {
+    display: none !important;
+}
+
+/* Wipe YouTube top masthead navigation bar across all pages */
+#masthead-container,
+ytd-masthead,
+#masthead {
+    display: none !important;
+    visibility: hidden !important;
+    height: 0 !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+}
+
+/* Hide left navigation drawer */
+ytd-guide-renderer,
+#guide-wrapper,
+#guide,
+tp-yt-app-drawer,
+ytd-mini-guide-renderer,
+yt-icon-button#guide-button {
+    display: none !important;
+}
+
+ytd-app[guide-persistent-and-visible] {
+    --app-drawer-width: 0px !important;
+}
+
+/* Hide search autocomplete dropdown popups */
+.gstl_50,
+.sbdd_a,
+ul.sbsb_b,
+div.sbsb_a {
+    display: none !important;
+    visibility: hidden !important;
+    height: 0 !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+}
+
+/* Hide loading skeletons */
+#masthead-skeleton,
+#home-page-skeleton,
+#guide-skeleton,
+ytd-app>#masthead-container,
+ytd-app #ghost-cards,
+.watch-skeleton,
+.skeleton-bg-color {
+    display: none !important;
+    opacity: 0 !important;
+    visibility: hidden !important;
+}

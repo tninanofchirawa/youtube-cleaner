@@ -1,510 +1,15 @@
 /**
  * ============================================================================
- * YOUTUBE CLEANER - Minimal AI-Style Interface & Distraction Filter Script
- * ============================================================================
- * 
- * ARCHITECTURE OVERVIEW FOR BEGINNERS:
- * -----------------------------------
- * This JavaScript file is injected into YouTube pages as a Chrome Extension Content
- * Script (specified in manifest.json). It runs in the context of YouTube web pages
- * and performs 9 core responsibilities:
- * 
- *  1. State Detection: Identifies whether current page is Homepage or Playlist watch view.
- *  2. Autoplay Suppression: Prevents YouTube from automatically playing next videos.
- *  3. Search & Content Filtering: Uses Regular Expressions (RegEx) to hide clickbait,
- *     movie recaps, and sensationalist/NSFW content from search results.
- *  4. Homepage Mind-Map Interface: Hides default YouTube recommendations and replaces
- *     the homepage with a clean, interactive mind-map of user learning topics.
- *  5. Custom Blurred Background: Allows uploading local background pictures or image URLs
- *     with adjustable real-time Gaussian blur effects.
- *  6. Right-Side Auto-Hiding Control Dock: Vertical drawer for Add, Remove Table,
- *     and Deleted History buttons that slides out on hover.
- *  7. Collision Avoidance & Bounce Physics: Automatically detects overlaps between topic
- *     cards and the central cloud search hub, gently bouncing cards outward to safe coordinates.
- *  8. Drag-and-Drop & SVG Canvas: Draws thick high-contrast curved connection lines
- *     connecting user topic cards to a central search cloud.
- *  9. Zero-Delay Video Loading & Optimized Observer: Path-cached MutationObserver
- *     eliminates main-thread blocking, allowing HTML5 videos to open and play instantly.
+ * YOUTUBE CLEANER - Homepage Mind-Map Learning Hub Script
  * ============================================================================
  */
 
-(function () {
+(function (window) {
     'use strict';
 
-    /* ==========================================================================
-       1. CONSTANTS & CONFIGURATION
-       ========================================================================== */
+    var C = window.YTCleanerCommon;
 
-    var STORAGE_KEY_TOPICS = '__yt_mindmap_topics__';
-    var STORAGE_KEY_HISTORY = '__yt_mindmap_deleted_history__';
-    var STORAGE_KEY_BG_IMG = '__yt_mindmap_bg_img__';
-    var STORAGE_KEY_BG_BLUR = '__yt_mindmap_bg_blur__';
-
-    var MAX_TOPICS = 7;
-    var MAX_HISTORY = 10;
-
-    var PASTEL_PALETTE = [
-        '#fca34d', // Pastel Orange
-        '#70d34e', // Pastel Green
-        '#d69cf7', // Lavender Purple
-        '#53e5e5', // Soft Cyan
-        '#ff9fb2', // Soft Rose Pink
-        '#ffe169', // Butter Yellow
-        '#98c1d9', // Powder Blue
-        '#c3bef0'  // Periwinkle
-    ];
-
-    var DEFAULT_TOPICS = [
-        {
-            id: 't-1',
-            title: 'Real Analysis',
-            sub: '(Click to Search)',
-            url: '/results?search_query=Real+Analysis',
-            bg: '#fca34d',
-            color: '#1a1a1a',
-            x: 140,
-            y: 120
-        },
-        {
-            id: 't-2',
-            title: 'Linear Algebra',
-            sub: '(Click to Search)',
-            url: '/results?search_query=Linear+Algebra',
-            bg: '#70d34e',
-            color: '#1a1a1a',
-            x: 150,
-            y: 500
-        },
-        {
-            id: 't-3',
-            title: 'Graph Theory',
-            sub: '(Click to Search)',
-            url: '/results?search_query=Graph+Theory',
-            bg: '#d69cf7',
-            color: '#1a1a1a',
-            x: 670,
-            y: 580
-        },
-        {
-            id: 't-4',
-            title: 'Data Structures',
-            sub: '(Click to Search)',
-            url: '/results?search_query=Data+Structures',
-            bg: '#53e5e5',
-            color: '#1a1a1a',
-            x: 1100,
-            y: 490
-        },
-        {
-            id: 't-5',
-            title: 'Complex Analysis',
-            sub: '(Click to Search)',
-            url: '/results?search_query=Complex+Analysis',
-            bg: '#75d64b',
-            color: '#1a1a1a',
-            x: 1090,
-            y: 100
-        }
-    ];
-
-    /* ==========================================================================
-       2. COMPREHENSIVE BANNED SEARCH & BLOCKLIST PATTERNS (REGEX)
-       ========================================================================== */
-
-    var BANNED_PATTERNS = [
-        /* --- Movie Recaps & Time-Wasters --- */
-        /\brecap\b/i, /\brecapped\b/i, /\brecaps\b/i, /\bmovie summary\b/i, /\bfilm summary\b/i,
-        /\bin minutes\b/i, /\bmovie recaps\b/i, /\bmovie roll\b/i, /\bstory recapped\b/i,
-        /\bminute movies\b/i, /\bcinema summary\b/i, /\bfilm recap\b/i, /\brecap king\b/i,
-        /\bdetective recap\b/i, /\bpopcorn recap\b/i, /\bfast film\b/i, /\bprime recap\b/i,
-        /\bplot summary\b/i, /\bspeedy recap\b/i, /\bsnack movies\b/i, /\brecap studio\b/i,
-        /\bhorror recap\b/i, /\bsci fi recap\b/i, /\bquick movie\b/i, /\brecap zone\b/i,
-        /\baction recap\b/i, /\bsuper recap\b/i, /\bmovie express\b/i, /\bstory cinema\b/i,
-        /\brecap world\b/i, /\bmind recap\b/i, /\bmagic recap\b/i, /\bcinerecap\b/i,
-        /\bspoiler recap\b/i, /\bmovie breakdown\b/i, /\bplot recap\b/i, /\bquick recap\b/i,
-        /\breel recap\b/i, /\bdaily recap\b/i, /\bmovie bites\b/i, /\bscreen recap\b/i,
-        /\bfilm digest\b/i, /\brecap central\b/i, /\bcinema rush\b/i, /\bmovie in minutes\b/i,
-
-        /* --- Specific Sensational TV & Drama --- */
-        /\bthe lobster\b/i, /\bthe mentalist\b/i, /\bgame of thrones\b/i, /\bdr house\b/i, /\bsex education\b/i,
-
-        /* --- Adult & Explicit Blocklist --- */
-        /\bnude\b/i, /\bnudity\b/i, /\bnaked\b/i, /\bnsfw\b/i, /\bporn\b/i, /\bporno\b/i,
-        /\bpornography\b/i, /\bxnxx\b/i, /\bxvideos\b/i, /\bpornhub\b/i, /\bredtube\b/i,
-        /\bxhamster\b/i, /\bonlyfans\b/i, /\berotic\b/i, /\berotica\b/i, /\bhentai\b/i,
-        /\becchi\b/i, /\byaoi\b/i, /\byuri\b/i, /\bhot girl\b/i, /\bsexy girl\b/i,
-        /\bbikini\b/i, /\blingerie\b/i, /\bhotscene\b/i, /\bintimate scene\b/i,
-        /\bbed scene\b/i, /\bkissing scene\b/i, /\bbreastmilk\b/i, /\bbreast milk\b/i,
-        /\bcleavage\b/i, /\bintercourse\b/i, /\borgasm\b/i, /\bmasturbat/i, /\bejaculat/i,
-        /\bhand expression\b/i, /\bboob\b/i, /\bboobs\b/i, /\btits\b/i, /\btitties\b/i,
-        /\bnipple\b/i, /\bvagina\b/i, /\bpenis\b/i, /\bdick\b/i, /\bcock\b/i, /\bpussy\b/i,
-        /\banal\b/i, /\bblowjob\b/i, /\bhot massage\b/i, /\bsex massage\b/i, /\berotic massage\b/i,
-        /\bnuru massage\b/i, /\bbusty\b/i, /\bmilf\b/i, /\blewd\b/i, /\buncensored\b/i, /\bstriptease\b/i
-    ];
-
-    /* ==========================================================================
-       3. PAGE STATE DETECTION (INSTANT DOM FLAGS)
-       ========================================================================== */
-
-    var BANNED_HUB_PATHS = [
-        '/feed/trending',
-        '/feed/subscriptions',
-        '/feed/storefront',
-        '/gaming',
-        '/playables',
-        '/podcasts',
-        '/premium',
-        '/feed/explore',
-        '/channel/UC4R8DWoMoI7CAwX8_LjQHigh',
-        '/channel/UC-9-kyTW8ZkZNDHQJ6FgpwQ',
-        '/channel/UCYfdidRxbB8Qhf0Nx7ioOYw',
-        '/channel/UCrpQ4p1TIw2vn3VQ06FJ-JA',
-        '/channel/UCEgdi0XIXXZ-qJOFPf4JSKw'
-    ];
-
-    function redirectBannedHubs() {
-        var currentPath = window.location.pathname.toLowerCase();
-        var isBanned = BANNED_HUB_PATHS.some(function (bannedPath) {
-            return currentPath.startsWith(bannedPath.toLowerCase());
-        });
-
-        if (isBanned) {
-            window.location.href = '/';
-        }
-    }
-
-    function scrubDescriptionHubLinks() {
-        if (!window.location.pathname.startsWith('/watch')) return;
-
-        var descriptionElements = document.querySelectorAll(
-            'ytd-rich-metadata-renderer, ytd-rich-metadata-row-renderer, ytd-metadata-row-container-renderer, ytd-metadata-row-renderer, ytd-structured-description-content-renderer, ytd-info-panel-content-renderer, ytd-video-attributes-section-renderer'
-        );
-
-        descriptionElements.forEach(function (el) {
-            el.remove();
-        });
-
-        var hubKeywordsRegex = /\b(gaming|music\.youtube\.com|podcasts|playables|premium|trending|subscriptions|storefront|news hub|live hub|sports hub)\b/i;
-        var links = document.querySelectorAll('#description a[href], #description-inner a[href], ytd-watch-metadata a[href]');
-        
-        links.forEach(function (link) {
-            var href = link.getAttribute('href') || '';
-            var text = (link.textContent || '').toLowerCase();
-
-            if (hubKeywordsRegex.test(href) || hubKeywordsRegex.test(text)) {
-                var card = link.closest('ytd-rich-metadata-renderer, ytd-metadata-row-renderer, ytd-structured-description-content-renderer') || link;
-                card.remove();
-            }
-        });
-    }
-
-    function updatePageStateFlags() {
-        redirectBannedHubs();
-        var isPlaylist = new URLSearchParams(window.location.search).has('list');
-        var isHome = window.location.pathname === '/' || window.location.pathname === '';
-        
-        document.documentElement.setAttribute('data-has-playlist', isPlaylist ? 'true' : 'false');
-        document.documentElement.setAttribute('data-is-home', isHome ? 'true' : 'false');
-    }
-
-    updatePageStateFlags();
-
-    var lastDisabledAutoplayVideoId = '';
-
-    function disableAutoplay() {
-        var searchParams = new URLSearchParams(window.location.search);
-        var videoId = searchParams.get('v');
-        if (!videoId || videoId === lastDisabledAutoplayVideoId) return;
-
-        var autoPlayToggle = document.querySelector('.ytp-autonav-toggle-button');
-        if (autoPlayToggle) {
-            if (autoPlayToggle.getAttribute('aria-checked') === 'true') {
-                autoPlayToggle.click();
-            }
-            lastDisabledAutoplayVideoId = videoId;
-        }
-    }
-
-    /* ==========================================================================
-       4. SEARCH INTERCEPTION & FEED SCRUBBING
-       ========================================================================== */
-
-    function scrubSearchFeed() {
-        if (!window.location.pathname.startsWith('/results')) {
-            return;
-        }
-
-        var searchParams = new URLSearchParams(window.location.search);
-        var query = (searchParams.get('search_query') || '').toLowerCase();
-
-        var isQueryBanned = BANNED_PATTERNS.some(function (pattern) {
-            return pattern.test(query);
-        });
-
-        if (isQueryBanned) {
-            var contents = document.querySelector('ytd-section-list-renderer #contents, #primary');
-            if (contents) {
-                contents.innerHTML = '<div style="padding: 60px; text-align: center; color: var(--yt-cleaner-subtext, #888); font-size: 18px; font-weight: bold;">Content blocked by policy.</div>';
-            }
-            return;
-        }
-
-        var cards = document.querySelectorAll(
-            'ytd-video-renderer, ytd-channel-renderer, ytd-reel-shelf-renderer, ytd-shelf-renderer, ytd-lockup-view-model, yt-lockup-view-model'
-        );
-
-        cards.forEach(function (card) {
-            var text = card.innerText || '';
-            var isCardBanned = BANNED_PATTERNS.some(function (pattern) {
-                return pattern.test(text);
-            });
-            if (isCardBanned) {
-                card.remove();
-            }
-        });
-
-        var suggestions = document.querySelectorAll('.sbsb_c, .sbct, yt-searchbox yt-suggestion');
-        suggestions.forEach(function (item) {
-            var text = item.innerText || '';
-            var isSuggestionBanned = BANNED_PATTERNS.some(function (pattern) {
-                return pattern.test(text);
-            });
-            if (isSuggestionBanned) {
-                item.style.display = 'none';
-            }
-        });
-    }
-
-    /* ==========================================================================
-       5. HIGH-PERFORMANCE PATH-CACHED MUTATION OBSERVER
-       ========================================================================== */
-
-    if (window.__ytCleanerObserver) {
-        window.__ytCleanerObserver.disconnect();
-    }
-
-    window.__ytIsTicking = false;
-    var lastObservedPath = '';
-
-    /**
-     * Optimized MutationObserver callback.
-     * Caches current URL path so state flags & mindmap sync only execute on actual path changes.
-     * Prevents main-thread blocking and eliminates 1-second video buffering delays!
-     */
-    function handleDOMMutation() {
-        var currentPath = window.location.pathname + window.location.search;
-
-        if (currentPath !== lastObservedPath) {
-            lastObservedPath = currentPath;
-            redirectBannedHubs();
-            updatePageStateFlags();
-            syncCenteredSearchUI();
-            disableAutoplay();
-        }
-
-        if (!window.__ytIsTicking) {
-            window.__ytIsTicking = true;
-            window.requestAnimationFrame(function () {
-                scrubSearchFeed();
-                window.__ytIsTicking = false;
-            });
-        }
-    }
-
-    window.__ytCleanerObserver = new MutationObserver(handleDOMMutation);
-    window.__ytCleanerObserver.observe(document.documentElement, {
-        childList: true,
-        subtree: true
-    });
-
-    /* ==========================================================================
-       6. DIRECT SEARCH REDIRECTION & INSTANT VIDEO NAVIGATION
-       ========================================================================== */
-
-    function handleDirectSearch(query) {
-        var cleanQuery = (query || '').trim();
-        if (cleanQuery.length > 0) {
-            var container = document.getElementById('custom-mindmap-container');
-            if (container) {
-                container.style.opacity = '0';
-                container.style.transition = 'opacity 0.12s ease';
-            }
-            window.location.href = '/results?search_query=' + encodeURIComponent(cleanQuery);
-        }
-    }
-
-    window.addEventListener('yt-navigate-start', function () {
-        redirectBannedHubs();
-        updatePageStateFlags();
-        var isHome = window.location.pathname === '/' || window.location.pathname === '';
-        if (!isHome) {
-            var container = document.getElementById('custom-mindmap-container');
-            if (container) {
-                container.style.display = 'none';
-                container.remove();
-            }
-        }
-    });
-
-    document.addEventListener('click', function (e) {
-        var link = e.target.closest('a[href]');
-        if (link) {
-            var href = link.getAttribute('href') || '';
-            var lowerHref = href.toLowerCase();
-
-            var isBannedHubLink = BANNED_HUB_PATHS.some(function (bannedPath) {
-                return lowerHref.includes(bannedPath.toLowerCase());
-            }) || lowerHref.includes('music.youtube.com');
-
-            if (isBannedHubLink) {
-                e.preventDefault();
-                e.stopPropagation();
-                window.location.href = '/';
-                return;
-            }
-
-            if (href.startsWith('/watch') || href.startsWith('/results')) {
-                document.documentElement.setAttribute('data-is-home', 'false');
-                var container = document.getElementById('custom-mindmap-container');
-                if (container) {
-                    container.style.display = 'none';
-                    container.remove();
-                }
-            }
-        }
-    }, true);
-
-    /* ==========================================================================
-       7. STORAGE & CUSTOM BACKGROUND LOGIC
-       ========================================================================== */
-
-    function getSavedTopics() {
-        var raw = localStorage.getItem(STORAGE_KEY_TOPICS);
-        if (raw === null) return DEFAULT_TOPICS;
-        try {
-            var parsed = JSON.parse(raw);
-            return Array.isArray(parsed) ? parsed : DEFAULT_TOPICS;
-        } catch (e) {
-            return DEFAULT_TOPICS;
-        }
-    }
-
-    function saveTopics(topics) {
-        try {
-            localStorage.setItem(STORAGE_KEY_TOPICS, JSON.stringify(topics));
-        } catch (e) {
-            console.error('YouTube Cleaner: Could not save topics to localStorage', e);
-        }
-    }
-
-    function getDeletedHistory() {
-        var raw = localStorage.getItem(STORAGE_KEY_HISTORY);
-        if (!raw) return [];
-        try {
-            var parsed = JSON.parse(raw);
-            return Array.isArray(parsed) ? parsed : [];
-        } catch (e) {
-            return [];
-        }
-    }
-
-    function pushDeletedHistory(topic) {
-        if (!topic) return;
-        var history = getDeletedHistory();
-        
-        history = history.filter(function (item) { return item.id !== topic.id; });
-        topic.deletedAt = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-
-        history.unshift(topic);
-        if (history.length > MAX_HISTORY) {
-            history = history.slice(0, MAX_HISTORY);
-        }
-
-        try {
-            localStorage.setItem(STORAGE_KEY_HISTORY, JSON.stringify(history));
-        } catch (e) {}
-    }
-
-    function restoreDeletedTopic(topicId) {
-        var topics = getSavedTopics();
-        if (topics.length >= MAX_TOPICS) {
-            alert('Maximum of 7 active topics allowed. Please remove a topic before restoring.');
-            return false;
-        }
-
-        var history = getDeletedHistory();
-        var targetIndex = history.findIndex(function (item) { return item.id === topicId; });
-
-        if (targetIndex !== -1) {
-            var restoredTopic = history.splice(targetIndex, 1)[0];
-            delete restoredTopic.deletedAt;
-
-            topics.push(restoredTopic);
-            saveTopics(topics);
-            try { localStorage.setItem(STORAGE_KEY_HISTORY, JSON.stringify(history)); } catch (e) {}
-            return true;
-        }
-        return false;
-    }
-
-    function deleteTopicWithHistory(topicId) {
-        var topics = getSavedTopics();
-        var target = topics.find(function (item) { return item.id === topicId; });
-        if (target) {
-            pushDeletedHistory(target);
-            var updated = topics.filter(function (item) { return item.id !== topicId; });
-            saveTopics(updated);
-        }
-    }
-
-    function getBgImage() { return localStorage.getItem(STORAGE_KEY_BG_IMG) || ''; }
-
-    function saveBgImage(url) {
-        if (url) {
-            localStorage.setItem(STORAGE_KEY_BG_IMG, url);
-        } else {
-            localStorage.removeItem(STORAGE_KEY_BG_IMG);
-        }
-    }
-
-    function getBgBlur() {
-        var val = localStorage.getItem(STORAGE_KEY_BG_BLUR);
-        return val !== null ? parseInt(val, 10) : 12;
-    }
-
-    function saveBgBlur(pxVal) {
-        localStorage.setItem(STORAGE_KEY_BG_BLUR, String(pxVal));
-    }
-
-    function applyCustomBackground() {
-        var container = document.getElementById('custom-mindmap-container');
-        if (!container) return;
-
-        var bgImage = getBgImage();
-        var blurPx = getBgBlur();
-        var bgLayer = document.getElementById('custom-bg-image-layer');
-
-        if (!bgImage) {
-            if (bgLayer) bgLayer.remove();
-            container.removeAttribute('data-has-custom-bg');
-            return;
-        }
-
-        container.setAttribute('data-has-custom-bg', 'true');
-        if (!bgLayer) {
-            bgLayer = document.createElement('div');
-            bgLayer.id = 'custom-bg-image-layer';
-            container.insertBefore(bgLayer, container.firstChild);
-        }
-
-        bgLayer.style.backgroundImage = 'url("' + bgImage.replace(/"/g, '\\"') + '")';
-        bgLayer.style.filter = 'blur(' + blurPx + 'px) brightness(0.72) scale(1.06)';
-    }
-
-    /* ==========================================================================
-       8. COLLISION AVOIDANCE & BOUNCE PHYSICS FOR TOPIC CARDS
-       ========================================================================== */
-
+    /* COLLISION AVOIDANCE & BOUNCE PHYSICS FOR TOPIC CARDS */
     function checkAndBounceCollisions(card, topicId) {
         var cloud = document.querySelector('.custom-cloud-shape');
         if (!card || !cloud) return;
@@ -544,22 +49,19 @@
                 card.style.transition = 'transform 0.15s ease, box-shadow 0.15s ease';
             }, 320);
 
-            var topics = getSavedTopics();
+            var topics = C.getSavedTopics();
             var targetTopic = topics.find(function (t) { return t.id === topicId; });
             if (targetTopic) {
                 targetTopic.x = newX;
                 targetTopic.y = newY;
-                saveTopics(topics);
+                C.saveTopics(topics);
             }
 
             drawConnectors();
         }
     }
 
-    /* ==========================================================================
-       9. SVG CONNECTOR LINE CANVAS DRAWING
-       ========================================================================== */
-
+    /* SVG CONNECTOR LINE CANVAS DRAWING */
     function drawConnectors() {
         var svg = document.getElementById('custom-connectors-svg');
         var cloud = document.querySelector('.custom-cloud-shape');
@@ -570,7 +72,7 @@
         var cX = cloudRect.left + cloudRect.width / 2;
         var cY = cloudRect.top + cloudRect.height / 2;
 
-        var topics = getSavedTopics();
+        var topics = C.getSavedTopics();
         topics.forEach(function (topic) {
             var card = document.getElementById(topic.id);
             if (!card) return;
@@ -597,10 +99,7 @@
         });
     }
 
-    /* ==========================================================================
-       10. DRAG-AND-DROP HANDLER (LEAK-FREE & COLLISION BOUNCE)
-       ========================================================================== */
-
+    /* DRAG-AND-DROP HANDLER */
     function makeDraggable(card, topicId) {
         var isDragging = false;
         var startMouseX, startMouseY, startCardX, startCardY;
@@ -629,12 +128,12 @@
             window.removeEventListener('mouseup', onMouseUp);
 
             if (hasMoved) {
-                var topics = getSavedTopics();
+                var topics = C.getSavedTopics();
                 var target = topics.find(function (t) { return t.id === topicId; });
                 if (target) {
                     target.x = card.offsetLeft;
                     target.y = card.offsetTop;
-                    saveTopics(topics);
+                    C.saveTopics(topics);
                 }
                 checkAndBounceCollisions(card, topicId);
             }
@@ -642,7 +141,7 @@
 
         card.addEventListener('mousedown', function (e) {
             if (e.target.closest('.topic-delete-btn')) return;
-            
+
             isDragging = true;
             hasMoved = false;
             startMouseX = e.clientX;
@@ -664,14 +163,11 @@
         });
     }
 
-    /* ==========================================================================
-       11. DOCK & CARDS RENDERING
-       ========================================================================== */
-
+    /* TOOLBAR STATE */
     function updateBottomToolbarState() {
-        var topics = getSavedTopics();
-        var history = getDeletedHistory();
-        
+        var topics = C.getSavedTopics();
+        var history = C.getDeletedHistory();
+
         var addBtn = document.getElementById('tb-add-btn');
         var warnText = document.getElementById('tb-warning-notice');
         var historyBadge = document.getElementById('tb-history-count');
@@ -682,7 +178,7 @@
 
         if (!addBtn) return;
 
-        if (topics.length >= MAX_TOPICS) {
+        if (topics.length >= C.MAX_TOPICS) {
             addBtn.classList.add('disabled-btn');
             if (warnText) warnText.style.display = 'block';
         } else {
@@ -691,13 +187,14 @@
         }
     }
 
+    /* RENDER TOPIC CARDS */
     function renderTopicCards(container) {
         var existingCards = container.querySelectorAll('.custom-topic-card');
         existingCards.forEach(function (c) {
             c.remove();
         });
 
-        var topics = getSavedTopics();
+        var topics = C.getSavedTopics();
         topics.forEach(function (t) {
             var card = document.createElement('a');
             card.id = t.id;
@@ -717,7 +214,7 @@
             delBtn.addEventListener('click', function (e) {
                 e.preventDefault();
                 e.stopPropagation();
-                deleteTopicWithHistory(t.id);
+                C.deleteTopicWithHistory(t.id);
                 renderTopicCards(container);
                 updateBottomToolbarState();
                 drawConnectors();
@@ -745,16 +242,13 @@
 
         drawConnectors();
         updateBottomToolbarState();
-        applyCustomBackground();
+        C.applyCustomBackground();
     }
 
-    /* ==========================================================================
-       12. MODAL DIALOGS (ADD, REMOVE, HISTORY, & BACKGROUND SETTINGS)
-       ========================================================================== */
-
+    /* MODAL DIALOGS */
     function openAddTopicModal(container) {
-        var topics = getSavedTopics();
-        if (topics.length >= MAX_TOPICS) {
+        var topics = C.getSavedTopics();
+        if (topics.length >= C.MAX_TOPICS) {
             alert('Maximum of 7 topics allowed. Please remove a topic before adding a new one.');
             return;
         }
@@ -762,7 +256,7 @@
         var existingModal = document.getElementById('chrome-group-modal');
         if (existingModal) existingModal.remove();
 
-        var selectedColor = PASTEL_PALETTE[0];
+        var selectedColor = C.PASTEL_PALETTE[0];
 
         var modal = document.createElement('div');
         modal.id = 'chrome-group-modal';
@@ -785,7 +279,7 @@
 
                 <label class="cg-input-label">Card Color</label>
                 <div class="cg-palette-wrapper">
-                    ${PASTEL_PALETTE.map((c, i) => `
+                    ${C.PASTEL_PALETTE.map((c, i) => `
                         <div class="cg-color-circle ${i === 0 ? 'active' : ''}" data-color="${c}" style="background: ${c};" role="button" aria-label="Color ${i + 1}"></div>
                     `).join('')}
                 </div>
@@ -841,7 +335,7 @@
                 finalUrl = '/results?search_query=' + encodeURIComponent(finalUrl);
             }
 
-            var currentTopics = getSavedTopics();
+            var currentTopics = C.getSavedTopics();
             var spawnX = 200 + (currentTopics.length * 60) % 500;
             var spawnY = 160 + (currentTopics.length * 40) % 300;
 
@@ -856,7 +350,7 @@
                 y: spawnY
             });
 
-            saveTopics(currentTopics);
+            C.saveTopics(currentTopics);
             renderTopicCards(container);
             closeModal();
         });
@@ -871,7 +365,7 @@
         var existingModal = document.getElementById('chrome-group-modal');
         if (existingModal) existingModal.remove();
 
-        var topics = getSavedTopics();
+        var topics = C.getSavedTopics();
 
         var modal = document.createElement('div');
         modal.id = 'chrome-group-modal';
@@ -887,9 +381,9 @@
                 <tr>
                     <td class="cg-td-title">
                         <span class="cg-color-dot" style="background: ${t.bg};"></span>
-                        <strong>${escapeHtml(t.title)}</strong>
+                        <strong>${C.escapeHtml(t.title)}</strong>
                     </td>
-                    <td class="cg-td-url">${escapeHtml(t.url)}</td>
+                    <td class="cg-td-url">${C.escapeHtml(t.url)}</td>
                     <td class="cg-td-action">
                         <button class="cg-table-btn cg-btn-danger" data-remove-id="${t.id}">Remove</button>
                     </td>
@@ -948,7 +442,7 @@
             var removeBtn = e.target.closest('[data-remove-id]');
             if (removeBtn) {
                 var topicId = removeBtn.getAttribute('data-remove-id');
-                deleteTopicWithHistory(topicId);
+                C.deleteTopicWithHistory(topicId);
                 renderTopicCards(container);
                 openRemoveTopicsModal(container);
             }
@@ -959,9 +453,9 @@
         var existingModal = document.getElementById('chrome-group-modal');
         if (existingModal) existingModal.remove();
 
-        var history = getDeletedHistory();
-        var activeTopics = getSavedTopics();
-        var isMaxReached = activeTopics.length >= MAX_TOPICS;
+        var history = C.getDeletedHistory();
+        var activeTopics = C.getSavedTopics();
+        var isMaxReached = activeTopics.length >= C.MAX_TOPICS;
 
         var modal = document.createElement('div');
         modal.id = 'chrome-group-modal';
@@ -977,10 +471,10 @@
                 <tr>
                     <td class="cg-td-title">
                         <span class="cg-color-dot" style="background: ${t.bg};"></span>
-                        <strong>${escapeHtml(t.title)}</strong>
-                        <small class="cg-deleted-time">(Deleted ${escapeHtml(t.deletedAt || '')})</small>
+                        <strong>${C.escapeHtml(t.title)}</strong>
+                        <small class="cg-deleted-time">(Deleted ${C.escapeHtml(t.deletedAt || '')})</small>
                     </td>
-                    <td class="cg-td-url">${escapeHtml(t.url)}</td>
+                    <td class="cg-td-url">${C.escapeHtml(t.url)}</td>
                     <td class="cg-td-action">
                         <button class="cg-table-btn cg-btn-restore ${isMaxReached ? 'disabled-btn' : ''}" 
                                 data-restore-id="${t.id}" 
@@ -1043,7 +537,7 @@
             var restoreBtn = e.target.closest('[data-restore-id]');
             if (restoreBtn && !restoreBtn.classList.contains('disabled-btn')) {
                 var topicId = restoreBtn.getAttribute('data-restore-id');
-                var restored = restoreDeletedTopic(topicId);
+                var restored = C.restoreDeletedTopic(topicId);
                 if (restored) {
                     renderTopicCards(container);
                     openHistoryModal(container);
@@ -1056,8 +550,8 @@
         var existingModal = document.getElementById('chrome-group-modal');
         if (existingModal) existingModal.remove();
 
-        var currentBg = getBgImage();
-        var currentBlur = getBgBlur();
+        var currentBg = C.getBgImage();
+        var currentBlur = C.getBgBlur();
 
         var modal = document.createElement('div');
         modal.id = 'chrome-group-modal';
@@ -1073,7 +567,7 @@
 
             <div class="cg-modal-body">
                 <label class="cg-input-label" for="cg-bg-url">Image Web URL</label>
-                <input id="cg-bg-url" type="text" placeholder="https://images.unsplash.com/photo-..." value="${escapeHtml(currentBg.startsWith('data:') ? '' : currentBg)}" autocomplete="off" />
+                <input id="cg-bg-url" type="text" placeholder="https://images.unsplash.com/photo-..." value="${C.escapeHtml(currentBg.startsWith('data:') ? '' : currentBg)}" autocomplete="off" />
 
                 <label class="cg-input-label">Upload Image File</label>
                 <div class="cg-file-upload-box" id="cg-file-trigger" role="button" tabindex="0">
@@ -1145,9 +639,9 @@
         modal.addEventListener('click', function (e) { if (e.target === modal) closeModal(); });
 
         document.getElementById('cg-reset-bg-btn').addEventListener('click', function () {
-            saveBgImage('');
-            saveBgBlur(12);
-            applyCustomBackground();
+            C.saveBgImage('');
+            C.saveBgBlur(12);
+            C.applyCustomBackground();
             drawConnectors();
             closeModal();
         });
@@ -1158,26 +652,15 @@
                 newUrl = urlInput.value.trim();
             }
 
-            saveBgImage(newUrl);
-            saveBgBlur(blurSlider.value);
-            applyCustomBackground();
+            C.saveBgImage(newUrl);
+            C.saveBgBlur(blurSlider.value);
+            C.applyCustomBackground();
             drawConnectors();
             closeModal();
         });
     }
 
-    function escapeHtml(str) {
-        return String(str || '')
-            .replace(/&/g, '&amp;')
-            .replace(/</g, '&lt;')
-            .replace(/>/g, '&gt;')
-            .replace(/"/g, '&quot;');
-    }
-
-    /* ==========================================================================
-       13. HOMEPAGE MIND-MAP WORKSPACE SYNCHRONIZATION
-       ========================================================================== */
-
+    /* HOMEPAGE MIND-MAP WORKSPACE SYNCHRONIZATION */
     function syncCenteredSearchUI() {
         if (!document.body) return;
 
@@ -1238,14 +721,16 @@
 
         document.body.appendChild(container);
         renderTopicCards(container);
-        applyCustomBackground();
+        C.applyCustomBackground();
 
         var inputEl = document.getElementById('custom-search-input');
         if (inputEl) {
             inputEl.addEventListener('keydown', function (e) {
                 if (e.key === 'Enter') {
                     e.preventDefault();
-                    handleDirectSearch(inputEl.value);
+                    if (window.YTCleanerSearch && window.YTCleanerSearch.handleDirectSearch) {
+                        window.YTCleanerSearch.handleDirectSearch(inputEl.value);
+                    }
                 }
             });
             setTimeout(function () {
@@ -1273,23 +758,10 @@
         window.addEventListener('resize', drawConnectors);
     }
 
-    /* ==========================================================================
-       14. INITIALIZATION & SPA EVENT LISTENERS
-       ========================================================================== */
+    /* EXPOSE GLOBALS TO OTHER MODULES */
+    window.YTCleanerHome = {
+        syncCenteredSearchUI: syncCenteredSearchUI,
+        drawConnectors: drawConnectors
+    };
 
-    function initAll() {
-        updatePageStateFlags();
-        disableAutoplay();
-        scrubSearchFeed();
-        syncCenteredSearchUI();
-    }
-
-    if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', initAll);
-    } else {
-        initAll();
-    }
-
-    window.addEventListener('yt-navigate-finish', initAll);
-
-})();
+})(window);

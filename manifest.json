@@ -5,8 +5,23 @@
   "description": "Minimal AI-Style YouTube Interface",
   "content_scripts": [{
     "matches": ["*://*.youtube.com/*"],
-    "css": ["clean.css"],
-    "js": ["script.js"],
+    "css": [
+      "styles/common.css",
+      "styles/home.css",
+      "styles/channel.css",
+      "styles/playlist.css",
+      "styles/video.css",
+      "styles/search.css"
+    ],
+    "js": [
+      "scripts/common.js",
+      "scripts/home.js",
+      "scripts/channel.js",
+      "scripts/playlist.js",
+      "scripts/video.js",
+      "scripts/search.js",
+      "scripts/main.js"
+    ],
     "run_at": "document_start"
   }]
 }

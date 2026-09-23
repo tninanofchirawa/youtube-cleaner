@@ -1,0 +1,234 @@
+/* ==========================================================================
+   YOUTUBE CLEANER - Video Watch Page & Playlist Queue Panel Layout
+   ========================================================================== */
+
+/* 1. STANDALONE VIDEO PAGES: HIDE RIGHT SIDEBAR COMPLETELY */
+html:not([data-has-playlist="true"]) #secondary,
+html:not([data-has-playlist="true"]) #secondary-inner,
+html:not([data-has-playlist="true"]) ytd-watch-next-secondary-results-renderer,
+html:not([data-has-playlist="true"]) ytd-watch-flexy[flexy] #secondary.ytd-watch-flexy {
+    display: none !important;
+}
+
+html:not([data-has-playlist="true"]) ytd-watch-flexy[flexy] #primary.ytd-watch-flexy {
+    max-width: 100% !important;
+    min-width: 100% !important;
+    margin-right: 0 !important;
+}
+
+/* 2. PLAYLIST VIDEO PAGES: DISPLAY PLAYLIST PANEL CLEANLY ON RIGHT SIDE */
+html[data-has-playlist="true"] #secondary {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+}
+
+/* Hide all recommendation elements under playlist except playlist panel renderer */
+html[data-has-playlist="true"] #secondary ytd-item-section-renderer,
+html[data-has-playlist="true"] #secondary yt-chip-cloud-renderer,
+html[data-has-playlist="true"] #secondary #chips,
+html[data-has-playlist="true"] #secondary #chips-wrapper,
+html[data-has-playlist="true"] #secondary ytd-compact-video-renderer,
+html[data-has-playlist="true"] #secondary ytd-lockup-view-model,
+html[data-has-playlist="true"] #secondary yt-lockup-view-model,
+html[data-has-playlist="true"] #secondary ytd-shelf-renderer,
+html[data-has-playlist="true"] #secondary #related,
+html[data-has-playlist="true"] #secondary > ytd-watch-next-secondary-results-renderer > *:not(ytd-playlist-panel-renderer):not(#playlist) {
+    display: none !important;
+    visibility: hidden !important;
+    height: 0 !important;
+}
+
+/* Style Playlist Queue Panel */
+html[data-has-playlist="true"] ytd-playlist-panel-renderer {
+    border-radius: 16px !important;
+    overflow: hidden !important;
+    border: 1px solid var(--yt-cleaner-table-border) !important;
+    background: var(--yt-cleaner-cloud-bg) !important;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25) !important;
+}
+
+/* 3. DISTRACTION SUPPRESSION UNDER VIDEO */
+
+/* Hide endscreen overlay cards and countdowns */
+.ytp-ce-element,
+.ytp-ce-covering-overlay,
+.ytp-endscreen-content,
+.ytp-autonav-endscreen-countdown-container,
+.html5-endscreen,
+.ytp-suggestion-set,
+.ytp-upnext {
+    display: none !important;
+    opacity: 0 !important;
+    visibility: hidden !important;
+}
+
+/* Hide Shorts navigation and containers */
+ytd-guide-entry-renderer:has(a[title="Shorts"]),
+ytd-guide-entry-renderer:has(a[href*="/shorts"]),
+ytd-mini-guide-entry-renderer[aria-label="Shorts"],
+ytd-mini-guide-entry-renderer:has(a[href*="/shorts"]),
+yt-tab-shape[tab-title="Shorts"],
+yt-tab-shape:has(a[href*="/shorts"]),
+tp-yt-paper-tab:has(a[href*="/shorts"]),
+[target-id="browse-feed-UC-shorts"],
+ytd-reel-shelf-renderer,
+ytd-rich-shelf-renderer[is-shorts],
+#shorts-container,
+ytd-compact-radio-renderer,
+ytd-radio-renderer {
+    display: none !important;
+    visibility: hidden !important;
+    width: 0 !important;
+    height: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    pointer-events: none !important;
+}
+
+/* Hide comments section */
+ytd-comments#comments,
+#comment-section-renderer {
+    display: none !important;
+}
+
+/* Hide merch shelves & promotional offers */
+#merchandise-shelf,
+ytd-merchandise-shelf-renderer,
+ytd-ticket-shelf-renderer,
+ytd-offer-module-renderer {
+    display: none !important;
+}
+
+/* 4. VIDEO WATCH PAGE LAYOUT & PLAYER POSITIONING */
+ytd-watch-flexy {
+    padding-top: 20px !important;
+    background-color: var(--yt-cleaner-bg) !important;
+}
+
+ytd-watch-flexy #player-container-outer,
+ytd-watch-flexy #player-container-id,
+ytd-watch-flexy #player-full-bleed-container {
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    border-radius: 0 !important;
+}
+
+/* Native Video Player Sizing & Rounded Corners */
+#player,
+#player-container-inner,
+#movie_player,
+.html5-video-player {
+    border-radius: 16px !important;
+    overflow: hidden !important;
+    box-shadow: 0 12px 36px rgba(0, 0, 0, 0.35) !important;
+}
+
+.html5-main-video,
+video {
+    object-fit: contain !important;
+    border-radius: 16px !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+}
+
+/* Location Badges & Hashtag Metadata */
+ytd-watch-metadata #super-title,
+.ytd-video-primary-info-renderer #super-title,
+ytd-watch-metadata #super-title a,
+a[href*="/advanced_search"],
+a[href*="/hashtag/"],
+#location {
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 6px !important;
+    background: rgba(62, 166, 255, 0.15) !important;
+    color: #3ea6ff !important;
+    font-size: 13px !important;
+    font-weight: 600 !important;
+    padding: 4px 12px !important;
+    border-radius: 8px !important;
+    text-decoration: none !important;
+    margin-bottom: 8px !important;
+    border: 1px solid rgba(62, 166, 255, 0.3) !important;
+    transition: background 0.15s ease, border-color 0.15s ease !important;
+}
+
+ytd-watch-metadata #super-title a:hover,
+a[href*="/advanced_search"]:hover,
+a[href*="/hashtag/"]:hover {
+    background: rgba(62, 166, 255, 0.28) !important;
+    border-color: #3ea6ff !important;
+}
+
+/* Video Title Styling */
+ytd-watch-metadata #title h1,
+h1.ytd-watch-metadata {
+    font-size: 22px !important;
+    font-weight: 700 !important;
+    color: var(--yt-cleaner-text-primary) !important;
+    line-height: 1.3 !important;
+    margin-top: 4px !important;
+}
+
+/* Channel Owner Bar & Action Buttons Header Row */
+#owner.ytd-watch-metadata,
+#top-row.ytd-watch-metadata {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    margin-top: 14px !important;
+    margin-bottom: 14px !important;
+    padding: 12px 18px !important;
+    background: var(--yt-cleaner-cloud-bg) !important;
+    border: 1px solid var(--yt-cleaner-table-border) !important;
+    border-radius: 14px !important;
+}
+
+/* Completely hide video action buttons under video (Like, Dislike, Share, Ask, Save, More) */
+#actions.ytd-watch-metadata,
+#actions.ytd-watch-metadata ytd-menu-renderer,
+#top-row ytd-menu-renderer,
+#menu.ytd-watch-metadata,
+ytd-segmented-like-dislike-button-renderer {
+    display: none !important;
+    visibility: hidden !important;
+    height: 0 !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+}
+
+/* Hide YouTube ecosystem hub cards & promotional category rows in video description */
+ytd-rich-metadata-renderer,
+ytd-rich-metadata-row-renderer,
+ytd-metadata-row-container-renderer,
+ytd-metadata-row-renderer,
+ytd-structured-description-content-renderer,
+ytd-info-panel-content-renderer,
+ytd-video-attributes-section-renderer,
+ytd-watch-metadata a[href*="/gaming"],
+ytd-watch-metadata a[href*="music.youtube.com"],
+ytd-watch-metadata a[href*="/feed/trending"],
+ytd-watch-metadata a[href*="/feed/subscriptions"],
+ytd-watch-metadata a[href*="/feed/storefront"],
+ytd-watch-metadata a[href*="/podcasts"],
+ytd-watch-metadata a[href*="/playables"],
+ytd-watch-metadata a[href*="/premium"] {
+    display: none !important;
+    visibility: hidden !important;
+    height: 0 !important;
+}
+
+/* Video Description Box */
+#description.ytd-watch-metadata,
+ytd-watch-metadata #description {
+    background: var(--yt-cleaner-cloud-bg) !important;
+    border: 1px solid var(--yt-cleaner-table-border) !important;
+    border-radius: 14px !important;
+    padding: 16px !important;
+    margin-top: 12px !important;
+    color: var(--yt-cleaner-text-primary) !important;
+    font-size: 14px !important;
+    line-height: 1.5 !important;
+}

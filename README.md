@@ -67,17 +67,30 @@ YouTube Page Load (document_start)
 ```
 youtube-cleaner/
 ├── manifest.json   # Chrome Extension Manifest V3 configuration
-├── script.js       # Content script (Mindmap UI, physics engine, DOM observers, modals)
-├── clean.css       # Clean stylesheet (Hide rules, dark glassmorphism, responsive styles)
+├── styles/
+│   ├── common.css  # System theme variables, background resets, masthead & navigation drawer hiding
+│   ├── home.css    # Homepage Mind-Map Learning Hub, search capsule, topic cards, dock, modals
+│   ├── channel.css # Channel pages full-width layout, multi-column grid, Shorts tab hiding
+│   ├── playlist.css# Playlist overview page two-column layout & hover styling
+│   ├── video.css   # Watch page video player sizing, description link scrubbing, queue panel
+│   └── search.css  # Search results list layout & blocked query policy notice
+├── scripts/
+│   ├── common.js   # Shared constants, storage keys, RegEx blocklists, page state flags
+│   ├── home.js     # Homepage Mind-Map canvas rendering, SVG curve drawing, drag physics, modals
+│   ├── channel.js  # Channel header Shorts tab scrubbing
+│   ├── playlist.js # Playlist auto-advance protection logic
+│   ├── video.js    # Watch page autoplay handling & description link scrubbing
+│   ├── search.js   # Search results feed scrubbing & suggestion filtering
+│   └── main.js     # MutationObserver, SPA navigation listeners (yt-navigate-finish), initAll()
 ├── updates.xml     # Google Update Protocol XML template for CRX updates
 └── .gitignore      # Git ignore file excluding build artifacts (*.crx, *.pem)
 ```
 
 ### Important Files Description
 
-* **`manifest.json`**: Registers `clean.css` and `script.js` as content scripts targeting `*://*.youtube.com/*` at `document_start`.
-* **`script.js`**: Contains the core JavaScript logic—mindmap node physics, SVG line drawing, `localStorage` persistence, custom search injection, distraction scrubbing, and modal handling.
-* **`clean.css`**: Divided into 12 logical sections containing all custom design variables, YouTube feed suppression selectors, mindmap canvas styling, and layout overrides.
+* **`manifest.json`**: Registers modular stylesheets in `styles/` and scripts in `scripts/` targeting `*://*.youtube.com/*` at `document_start`.
+* **`styles/`**: Modular CSS files categorized cleanly by page type (`common.css`, `home.css`, `channel.css`, `playlist.css`, `video.css`, `search.css`).
+* **`scripts/`**: Modular JS files categorized cleanly by page type (`common.js`, `home.js`, `channel.js`, `playlist.js`, `video.js`, `search.js`, `main.js`).
 * **`updates.xml`**: XML template used if hosting self-signed `.crx` updates outside the Chrome Web Store.
 
 ---

@@ -1,79 +1,8 @@
 /* ==========================================================================
-   YOUTUBE CLEANER - Minimal AI-Style Interface & Theme Adaptive CSS
-   ==========================================================================
-   
-   BEGINNER ARCHITECTURE & STYLING GUIDE:
-   --------------------------------------
-   This CSS file controls the visual appearance of the YouTube Cleaner extension.
-   It is organized into 10 logical sections:
-   
-    1. System Theme Variables: Automatically matches OS Dark or Light Mode.
-    2. Zero-Delay Distraction Hiding: Instantly suppresses home grid & ads.
-    3. Strict Playlist Sidebar Protection: Hides all video recommendations under playlists.
-    4. Custom Blurred Background Layer: Full-screen image with Gaussian blur.
-    5. Mind-Map Workspace Canvas: Styles canvas & 3px high-contrast SVG connectors.
-    6. Professional Glassmorphic Cloud Hub: Modern capsule pod & search bar.
-    7. Professional Topic Cards & Drag Controls: Bold borders & elevated shadows.
-    8. Right-Side Auto-Hiding Vertical Control Dock: Auto-hides to right edge.
-    9. Premium Modal Dialogs & Custom File Uploads: Form controls & range sliders.
-   10. Table Modals & History Lists: Styles Remove Topics and History tables.
+   YOUTUBE CLEANER - Homepage Mind-Map Learning Hub & Glassmorphism Styles
    ========================================================================== */
 
-/* ==========================================================================
-   1. SYSTEM THEME COLOR DEFINITIONS (AUTO ADAPTS TO OS SYSTEM THEME)
-   ========================================================================== */
-
-:root {
-    /* Default Dark Mode Color Tokens */
-    --yt-cleaner-bg: #141518;
-    --yt-cleaner-cloud-bg: rgba(34, 36, 44, 0.88);
-    --yt-cleaner-cloud-border: rgba(255, 255, 255, 0.22);
-    --yt-cleaner-cloud-shadow: rgba(0, 0, 0, 0.45);
-    --yt-cleaner-text-primary: #f8f9fa;
-    --yt-cleaner-input-bg: rgba(18, 19, 22, 0.9);
-    --yt-cleaner-input-border: #3d414d;
-    --yt-cleaner-input-focus-border: #3ea6ff;
-    --yt-cleaner-bottom-bar-bg: rgba(18, 19, 22, 0.94);
-    --yt-cleaner-bottom-bar-text: #e0e3ea;
-    --yt-cleaner-bullet-bg: #3ea6ff;
-    --yt-cleaner-connector-stroke: #7c859c;
-    --yt-cleaner-modal-bg: #22242a;
-    --yt-cleaner-modal-text: #f0f2f5;
-    --yt-cleaner-modal-input-bg: #16171a;
-    --yt-cleaner-modal-input-border: #3c3f4a;
-    --yt-cleaner-subtext: #9aa0b4;
-    --yt-cleaner-table-hover: #2b2e36;
-    --yt-cleaner-table-border: #333642;
-}
-
-/* Automatically switch tokens when System OS Light Mode is active */
-@media (prefers-color-scheme: light) {
-    :root {
-        --yt-cleaner-bg: #f2f4f8;
-        --yt-cleaner-cloud-bg: rgba(255, 255, 255, 0.9);
-        --yt-cleaner-cloud-border: rgba(0, 0, 0, 0.12);
-        --yt-cleaner-cloud-shadow: rgba(0, 0, 0, 0.12);
-        --yt-cleaner-text-primary: #1a1a1a;
-        --yt-cleaner-input-bg: #edf0f5;
-        --yt-cleaner-input-border: #c8cbd6;
-        --yt-cleaner-input-focus-border: #1a73e8;
-        --yt-cleaner-bottom-bar-bg: rgba(232, 235, 240, 0.94);
-        --yt-cleaner-bottom-bar-text: #2a2c34;
-        --yt-cleaner-bullet-bg: #1a73e8;
-        --yt-cleaner-connector-stroke: #5c6275;
-        --yt-cleaner-modal-bg: #ffffff;
-        --yt-cleaner-modal-text: #202124;
-        --yt-cleaner-modal-input-bg: #ffffff;
-        --yt-cleaner-modal-input-border: #dadce0;
-        --yt-cleaner-subtext: #606470;
-        --yt-cleaner-table-hover: #f1f3f8;
-        --yt-cleaner-table-border: #e2e5ec;
-    }
-}
-
-/* ==========================================================================
-   2. INSTANT ZERO-DELAY DISTRACTION HIDING & SCROLLBAR REMOVAL
-   ========================================================================== */
+/* 1. HOMEPAGE DISTRACTION FEED SUPPRESSION */
 
 /* Remove vertical scrollbars completely on Homepage */
 html[data-is-home="true"],
@@ -92,13 +21,13 @@ html[data-is-home="true"] body::-webkit-scrollbar {
 /* Instantly suppress YouTube Home Feed grid, recommendations & topic chips completely */
 ytd-browse[page-subtype="home"],
 #page-manager ytd-browse[page-subtype="home"],
-ytd-rich-grid-renderer,
+ytd-browse[page-subtype="home"] ytd-rich-grid-renderer,
 ytd-browse[page-subtype="home"] #contents,
 ytd-browse[page-subtype="home"] #chips,
 ytd-browse[page-subtype="home"] yt-chip-cloud-renderer,
-ytd-feed-filter-chip-bar-renderer,
-#feed-filter-chip-bar-container,
-ytd-rich-section-renderer {
+ytd-browse[page-subtype="home"] ytd-feed-filter-chip-bar-renderer,
+ytd-browse[page-subtype="home"] #feed-filter-chip-bar-container,
+ytd-browse[page-subtype="home"] ytd-rich-section-renderer {
     display: none !important;
     visibility: hidden !important;
     height: 0 !important;
@@ -106,305 +35,7 @@ ytd-rich-section-renderer {
     pointer-events: none !important;
 }
 
-/* Instantly force canvas background across all pages to prevent flashes */
-html,
-body,
-ytd-app,
-#page-manager {
-    background: var(--yt-cleaner-bg) !important;
-}
-
-/* Hide Explore / Trending entries in left sidebar */
-ytd-guide-section-renderer:has(a[href*="/feed/trending"]),
-ytd-guide-entry-renderer:has(a[href*="/feed/trending"]),
-ytd-browse[page-subtype="trending"] {
-    display: none !important;
-}
-
-/* Wipe YouTube top masthead navigation bar across all pages */
-#masthead-container,
-ytd-masthead,
-#masthead {
-    display: none !important;
-    visibility: hidden !important;
-    height: 0 !important;
-    opacity: 0 !important;
-    pointer-events: none !important;
-}
-
-#page-manager {
-    margin-top: 0 !important;
-}
-
-/* Hide search autocomplete dropdown popups */
-.gstl_50,
-.sbdd_a,
-ul.sbsb_b,
-div.sbsb_a {
-    display: none !important;
-    visibility: hidden !important;
-    height: 0 !important;
-    opacity: 0 !important;
-    pointer-events: none !important;
-}
-
-/* ==========================================================================
-   3. STRICT PLAYLIST SIDEBAR PROTECTION (HIDES ALL RECOMMENDATIONS UNDER PLAYLIST)
-   ========================================================================== */
-
-/* Standalone Video Pages: Hide right sidebar completely */
-html:not([data-has-playlist="true"]) #secondary,
-html:not([data-has-playlist="true"]) #secondary-inner,
-html:not([data-has-playlist="true"]) ytd-watch-next-secondary-results-renderer,
-html:not([data-has-playlist="true"]) ytd-watch-flexy[flexy] #secondary.ytd-watch-flexy {
-    display: none !important;
-}
-
-html:not([data-has-playlist="true"]) ytd-watch-flexy[flexy] #primary.ytd-watch-flexy {
-    max-width: 100% !important;
-    min-width: 100% !important;
-    margin-right: 0 !important;
-}
-
-/* Playlist Video Pages: Display playlist panel cleanly on right side */
-html[data-has-playlist="true"] #secondary {
-    display: block !important;
-    visibility: visible !important;
-    opacity: 1 !important;
-}
-
-/* Hide all recommendation elements under playlist except playlist panel renderer */
-html[data-has-playlist="true"] #secondary ytd-item-section-renderer,
-html[data-has-playlist="true"] #secondary yt-chip-cloud-renderer,
-html[data-has-playlist="true"] #secondary #chips,
-html[data-has-playlist="true"] #secondary #chips-wrapper,
-html[data-has-playlist="true"] #secondary ytd-compact-video-renderer,
-html[data-has-playlist="true"] #secondary ytd-lockup-view-model,
-html[data-has-playlist="true"] #secondary yt-lockup-view-model,
-html[data-has-playlist="true"] #secondary ytd-shelf-renderer,
-html[data-has-playlist="true"] #secondary #related,
-html[data-has-playlist="true"] #secondary > ytd-watch-next-secondary-results-renderer > *:not(ytd-playlist-panel-renderer):not(#playlist) {
-    display: none !important;
-    visibility: hidden !important;
-    height: 0 !important;
-}
-
-/* Style Playlist Queue Panel */
-html[data-has-playlist="true"] ytd-playlist-panel-renderer {
-    border-radius: 16px !important;
-    overflow: hidden !important;
-    border: 1px solid var(--yt-cleaner-table-border) !important;
-    background: var(--yt-cleaner-cloud-bg) !important;
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25) !important;
-}
-
-/* Hide endscreen overlay cards and countdowns */
-.ytp-ce-element,
-.ytp-ce-covering-overlay,
-.ytp-endscreen-content,
-.ytp-autonav-endscreen-countdown-container,
-.html5-endscreen,
-.ytp-suggestion-set,
-.ytp-upnext {
-    display: none !important;
-    opacity: 0 !important;
-    visibility: hidden !important;
-}
-
-/* Hide Shorts navigation and containers */
-ytd-guide-entry-renderer:has(a[title="Shorts"]),
-ytd-mini-guide-entry-renderer[aria-label="Shorts"],
-ytd-reel-shelf-renderer,
-ytd-rich-shelf-renderer[is-shorts],
-#shorts-container,
-ytd-compact-radio-renderer,
-ytd-radio-renderer {
-    display: none !important;
-}
-
-/* Hide comments section */
-ytd-comments#comments,
-#comment-section-renderer {
-    display: none !important;
-}
-
-/* Hide merch shelves & promotional offers */
-#merchandise-shelf,
-ytd-merchandise-shelf-renderer,
-ytd-ticket-shelf-renderer,
-ytd-offer-module-renderer {
-    display: none !important;
-}
-
-/* ==========================================================================
-   VIDEO WATCH PAGE LAYOUT, PLAYER POSITIONING & LOCATION VISIBILITY
-   ========================================================================== */
-
-/* Watch Page Outer Container Padding & Background */
-ytd-watch-flexy {
-    padding-top: 20px !important;
-    background-color: var(--yt-cleaner-bg) !important;
-}
-
-/* Clear dummy backgrounds & extra height offsets */
-ytd-watch-flexy #player-container-outer,
-ytd-watch-flexy #player-container-id,
-ytd-watch-flexy #player-full-bleed-container {
-    background: transparent !important;
-    border: none !important;
-    box-shadow: none !important;
-    border-radius: 0 !important;
-}
-
-/* Native Video Player Sizing & Rounded Corners */
-#player,
-#player-container-inner,
-#movie_player,
-.html5-video-player {
-    border-radius: 16px !important;
-    overflow: hidden !important;
-    box-shadow: 0 12px 36px rgba(0, 0, 0, 0.35) !important;
-}
-
-.html5-main-video,
-video {
-    object-fit: contain !important;
-    border-radius: 16px !important;
-    visibility: visible !important;
-    opacity: 1 !important;
-}
-
-/* Location Badges, Place Information & Positional Metadata */
-ytd-watch-metadata #super-title,
-.ytd-video-primary-info-renderer #super-title,
-ytd-watch-metadata #super-title a,
-a[href*="/advanced_search"],
-a[href*="/hashtag/"],
-#location {
-    display: inline-flex !important;
-    align-items: center !important;
-    gap: 6px !important;
-    background: rgba(62, 166, 255, 0.15) !important;
-    color: #3ea6ff !important;
-    font-size: 13px !important;
-    font-weight: 600 !important;
-    padding: 4px 12px !important;
-    border-radius: 8px !important;
-    text-decoration: none !important;
-    margin-bottom: 8px !important;
-    border: 1px solid rgba(62, 166, 255, 0.3) !important;
-    transition: background 0.15s ease, border-color 0.15s ease !important;
-}
-
-ytd-watch-metadata #super-title a:hover,
-a[href*="/advanced_search"]:hover,
-a[href*="/hashtag/"]:hover {
-    background: rgba(62, 166, 255, 0.28) !important;
-    border-color: #3ea6ff !important;
-}
-
-/* Video Title Styling */
-ytd-watch-metadata #title h1,
-h1.ytd-watch-metadata {
-    font-size: 22px !important;
-    font-weight: 700 !important;
-    color: var(--yt-cleaner-text-primary) !important;
-    line-height: 1.3 !important;
-    margin-top: 4px !important;
-}
-
-/* Channel Owner Bar & Action Buttons Header Row */
-#owner.ytd-watch-metadata,
-#top-row.ytd-watch-metadata {
-    display: flex !important;
-    align-items: center !important;
-    justify-content: space-between !important;
-    margin-top: 14px !important;
-    margin-bottom: 14px !important;
-    padding: 12px 18px !important;
-    background: var(--yt-cleaner-cloud-bg) !important;
-    border: 1px solid var(--yt-cleaner-table-border) !important;
-    border-radius: 14px !important;
-}
-
-/* Completely hide video action buttons under video (Like, Dislike, Share, Ask, Save, More) */
-#actions.ytd-watch-metadata,
-#actions.ytd-watch-metadata ytd-menu-renderer,
-#top-row ytd-menu-renderer,
-#menu.ytd-watch-metadata,
-ytd-segmented-like-dislike-button-renderer {
-    display: none !important;
-    visibility: hidden !important;
-    height: 0 !important;
-    opacity: 0 !important;
-    pointer-events: none !important;
-}
-
-/* Hide YouTube ecosystem hub cards & promotional category rows in video description */
-ytd-rich-metadata-renderer,
-ytd-rich-metadata-row-renderer,
-ytd-metadata-row-container-renderer,
-ytd-metadata-row-renderer,
-ytd-structured-description-content-renderer,
-ytd-info-panel-content-renderer,
-ytd-video-attributes-section-renderer,
-ytd-watch-metadata a[href*="/gaming"],
-ytd-watch-metadata a[href*="music.youtube.com"],
-ytd-watch-metadata a[href*="/feed/trending"],
-ytd-watch-metadata a[href*="/feed/subscriptions"],
-ytd-watch-metadata a[href*="/feed/storefront"],
-ytd-watch-metadata a[href*="/podcasts"],
-ytd-watch-metadata a[href*="/playables"],
-ytd-watch-metadata a[href*="/premium"] {
-    display: none !important;
-    visibility: hidden !important;
-    height: 0 !important;
-}
-
-/* Video Description Box */
-#description.ytd-watch-metadata,
-ytd-watch-metadata #description {
-    background: var(--yt-cleaner-cloud-bg) !important;
-    border: 1px solid var(--yt-cleaner-table-border) !important;
-    border-radius: 14px !important;
-    padding: 16px !important;
-    margin-top: 12px !important;
-    color: var(--yt-cleaner-text-primary) !important;
-    font-size: 14px !important;
-    line-height: 1.5 !important;
-}
-
-/* Hide left navigation drawer */
-ytd-guide-renderer,
-#guide-wrapper,
-#guide,
-tp-yt-app-drawer,
-ytd-mini-guide-renderer,
-yt-icon-button#guide-button {
-    display: none !important;
-}
-
-ytd-app[guide-persistent-and-visible] {
-    --app-drawer-width: 0px !important;
-}
-
-/* Hide loading skeletons */
-#masthead-skeleton,
-#home-page-skeleton,
-#guide-skeleton,
-ytd-app>#masthead-container,
-ytd-app #ghost-cards,
-.watch-skeleton,
-.skeleton-bg-color {
-    display: none !important;
-    opacity: 0 !important;
-    visibility: hidden !important;
-}
-
-/* ==========================================================================
-   4. CUSTOM BLURRED BACKGROUND IMAGE LAYER
-   ========================================================================== */
-
+/* 2. CUSTOM BLURRED BACKGROUND IMAGE LAYER */
 #custom-bg-image-layer {
     position: absolute !important;
     inset: -20px !important;
@@ -417,10 +48,7 @@ ytd-app #ghost-cards,
     transition: filter 0.3s ease, background-image 0.3s ease !important;
 }
 
-/* ==========================================================================
-   5. MIND-MAP WORKSPACE CANVAS & HIGH-CONTRAST SVG CONNECTORS
-   ========================================================================== */
-
+/* 3. MIND-MAP WORKSPACE CANVAS & SVG CONNECTORS */
 #custom-mindmap-container {
     position: fixed !important;
     inset: 0 !important;
@@ -442,7 +70,6 @@ ytd-app #ghost-cards,
     z-index: 1 !important;
 }
 
-/* Thicker, high-contrast, professional SVG connector curves */
 .custom-connector-path {
     stroke: var(--yt-cleaner-connector-stroke) !important;
     stroke-width: 3px !important;
@@ -454,10 +81,7 @@ ytd-app #ghost-cards,
     stroke: #ffffff !important;
 }
 
-/* ==========================================================================
-   6. PROFESSIONAL GLASSMORPHIC CLOUD HUB & SEARCH BAR
-   ========================================================================== */
-
+/* 4. GLASSMORPHIC CLOUD HUB & SEARCH BAR */
 .custom-cloud-center {
     position: absolute !important;
     top: 45% !important;
@@ -541,10 +165,7 @@ ytd-app #ghost-cards,
     box-shadow: 0 6px 18px rgba(62, 166, 255, 0.25) !important;
 }
 
-/* ==========================================================================
-   7. PROFESSIONAL TOPIC CARDS & DRAG CONTROLS
-   ========================================================================== */
-
+/* 5. TOPIC CARDS & DRAG CONTROLS */
 .custom-topic-card {
     position: absolute !important;
     display: flex !important;
@@ -621,10 +242,7 @@ ytd-app #ghost-cards,
     color: #ffffff !important;
 }
 
-/* ==========================================================================
-   8. RIGHT-SIDE AUTO-HIDING DOCK & STATIONARY BACKGROUND BUTTON
-   ========================================================================== */
-
+/* 6. RIGHT-SIDE AUTO-HIDING DOCK & BACKGROUND BUTTON */
 .custom-right-dock {
     position: fixed !important;
     top: 50% !important;
@@ -644,7 +262,6 @@ ytd-app #ghost-cards,
     transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1) !important;
 }
 
-/* High-Contrast Glowing Handle Bar on Right Dock Edge */
 .tb-right-handle {
     position: absolute !important;
     left: 4px !important;
@@ -663,7 +280,6 @@ ytd-app #ghost-cards,
     transform: translate(0, -50%) !important;
 }
 
-/* Action Buttons inside vertical dock */
 .tb-item-btn {
     display: inline-flex !important;
     align-items: center !important;
@@ -692,7 +308,6 @@ ytd-app #ghost-cards,
     transform: scale(0.97) !important;
 }
 
-/* Background Button Positioned Stationary at Bottom-Left Corner */
 .tb-floating-bg-btn {
     position: fixed !important;
     bottom: 20px !important;
@@ -707,7 +322,6 @@ ytd-app #ghost-cards,
     transition: background 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease, transform 0.08s ease !important;
 }
 
-/* Mouse Hover: Stays 100% stationary (0px movement) */
 .tb-floating-bg-btn:hover {
     background: var(--yt-cleaner-table-hover) !important;
     border-color: #3ea6ff !important;
@@ -715,7 +329,6 @@ ytd-app #ghost-cards,
     transform: none !important;
 }
 
-/* Mouse Click: Small, intentional button press animation */
 .tb-floating-bg-btn:active {
     transform: scale(0.96) !important;
 }
@@ -754,10 +367,7 @@ ytd-app #ghost-cards,
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2) !important;
 }
 
-/* ==========================================================================
-   9. PREMIUM MODAL DIALOGS & CUSTOM FILE UPLOAD STYLES
-   ========================================================================== */
-
+/* 7. PREMIUM MODAL DIALOGS & FORM CONTROLS */
 #chrome-group-modal {
     position: fixed !important;
     inset: 0 !important;
@@ -853,7 +463,6 @@ ytd-app #ghost-cards,
 }
 
 .cg-upload-icon { font-size: 18px !important; }
-
 .cg-slider-wrapper { padding: 4px 0 !important; }
 
 .cg-range-input {
@@ -943,10 +552,6 @@ ytd-app #ghost-cards,
 .cg-btn-ghost-danger:hover {
     background: rgba(234, 67, 53, 0.1) !important;
 }
-
-/* ==========================================================================
-   10. TABLE MODALS & DELETED HISTORY LIST STYLES
-   ========================================================================== */
 
 .cg-table-sub {
     font-size: 14px !important;
@@ -1047,16 +652,13 @@ ytd-app #ghost-cards,
     font-style: italic !important;
 }
 
-/* ==========================================================================
-   11. MOBILE & TABLET RESPONSIVE ADAPTATIONS
-   ========================================================================== */
-
+/* 8. MOBILE & TABLET RESPONSIVE ADAPTATIONS */
 @media (max-width: 768px) {
     .custom-cloud-center {
         width: 90% !important;
         height: 280px !important;
     }
-    
+
     .custom-title-label { font-size: 32px !important; }
 
     .custom-topic-card {
@@ -1078,92 +680,4 @@ ytd-app #ghost-cards,
         bottom: 14px !important;
         left: 14px !important;
     }
-}
-
-/* ==========================================================================
-   12. CHANNEL PAGE FULL-WIDTH LAYOUT ("FILL OUT CHANNEL PAGE")
-   ========================================================================== */
-
-/* Eliminate leftover guide drawer margins on page-manager across channel pages */
-ytd-app #page-manager,
-ytd-app[guide-persistent-and-visible] #page-manager,
-ytd-app #page-manager.ytd-app {
-    margin-left: 0 !important;
-    padding-left: 0 !important;
-}
-
-/* Expand Channel Page Container to fill viewport smoothly without left black gaps */
-ytd-browse[page-subtype="channels"],
-ytd-browse[page-subtype="channel"],
-ytd-browse[page-subtype="c"],
-ytd-browse[page-subtype="user"],
-ytd-browse,
-ytd-two-column-browse-results-renderer,
-ytd-two-column-browse-results-renderer.ytd-browse,
-ytd-two-column-browse-results-renderer[grid-6-columns],
-ytd-two-column-browse-results-renderer[grid-5-columns],
-ytd-two-column-browse-results-renderer[grid-4-columns] {
-    width: 100% !important;
-    max-width: 100% !important;
-    min-width: 100% !important;
-    margin-left: 0 !important;
-    margin-right: 0 !important;
-    padding-left: 24px !important;
-    padding-right: 24px !important;
-    box-sizing: border-box !important;
-}
-
-/* Ensure Channel Header Banner & Channel Header Container fill full width */
-#header.ytd-browse,
-ytd-c4-tabbed-header-renderer,
-yt-page-header-renderer,
-ytd-tabbed-header-renderer,
-#channel-header,
-#channel-container,
-#page-header,
-#page-header-container,
-#channel-header-container,
-#header-container.ytd-browse,
-.tp-yt-app-header-layout,
-.tp-yt-app-header-layout #contentContainer {
-    width: 100% !important;
-    max-width: 100% !important;
-    min-width: 100% !important;
-    margin-left: 0 !important;
-    margin-right: 0 !important;
-    padding-left: 0 !important;
-    padding-right: 0 !important;
-    box-sizing: border-box !important;
-}
-
-/* Ensure Channel Banner Image fills full width */
-#header.ytd-browse ytd-c4-tabbed-header-renderer #banner,
-#header.ytd-browse ytd-c4-tabbed-header-renderer #banner img,
-yt-page-header-renderer #banner,
-yt-page-header-renderer #banner img {
-    width: 100% !important;
-    max-width: 100% !important;
-    border-radius: 16px !important;
-}
-
-/* Make Channel Content Grids & Video Shelves fill out the expanded canvas */
-ytd-two-column-browse-results-renderer #primary,
-ytd-two-column-browse-results-renderer #primary-inner,
-ytd-two-column-browse-results-renderer #contents,
-ytd-section-list-renderer,
-ytd-item-section-renderer,
-ytd-grid-renderer,
-ytd-rich-grid-renderer {
-    width: 100% !important;
-    max-width: 100% !important;
-    min-width: 100% !important;
-    margin-left: 0 !important;
-    margin-right: 0 !important;
-}
-
-ytd-rich-grid-renderer #contents,
-ytd-rich-grid-row,
-#contents.ytd-rich-grid-renderer {
-    width: 100% !important;
-    max-width: 100% !important;
 }

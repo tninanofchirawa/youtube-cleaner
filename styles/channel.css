@@ -1,0 +1,110 @@
+/* ==========================================================================
+   YOUTUBE CLEANER - Channel Pages Layout & Shorts Suppression
+   ========================================================================== */
+
+/* 1. CHANNEL SHORTS TAB BUTTON SUPPRESSION */
+yt-tab-shape[tab-title="Shorts"],
+yt-tab-shape:has(a[href*="/shorts"]),
+tp-yt-paper-tab:has(a[href*="/shorts"]),
+[target-id="browse-feed-UC-shorts"],
+ytd-shorts-picker-item-renderer {
+    display: none !important;
+    visibility: hidden !important;
+    width: 0 !important;
+    height: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    pointer-events: none !important;
+}
+
+/* 2. ELIMINATE LEFTOVER GUIDE DRAWER MARGINS ON PAGE-MANAGER */
+ytd-app #page-manager,
+ytd-app[guide-persistent-and-visible] #page-manager,
+ytd-app #page-manager.ytd-app {
+    margin-left: 0 !important;
+    padding-left: 0 !important;
+}
+
+/* 3. EXPAND CHANNEL PAGE CONTAINER TO FILL VIEWPORT SMOOTHLY */
+ytd-browse[page-subtype="channels"],
+ytd-browse[page-subtype="channel"],
+ytd-browse[page-subtype="c"],
+ytd-browse[page-subtype="user"],
+ytd-browse[page-subtype="channels"] ytd-two-column-browse-results-renderer,
+ytd-browse[page-subtype="channel"] ytd-two-column-browse-results-renderer,
+ytd-browse[page-subtype="c"] ytd-two-column-browse-results-renderer,
+ytd-browse[page-subtype="user"] ytd-two-column-browse-results-renderer {
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 100% !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    padding-left: 24px !important;
+    padding-right: 24px !important;
+    box-sizing: border-box !important;
+}
+
+/* 4. ENSURE CHANNEL HEADER BANNER FILLS FULL WIDTH */
+#header.ytd-browse,
+ytd-c4-tabbed-header-renderer,
+yt-page-header-renderer,
+ytd-tabbed-header-renderer,
+#channel-header,
+#channel-container,
+#page-header,
+#page-header-container,
+#channel-header-container,
+#header-container.ytd-browse,
+.tp-yt-app-header-layout,
+.tp-yt-app-header-layout #contentContainer {
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 100% !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+    box-sizing: border-box !important;
+}
+
+#header.ytd-browse ytd-c4-tabbed-header-renderer #banner,
+#header.ytd-browse ytd-c4-tabbed-header-renderer #banner img,
+yt-page-header-renderer #banner,
+yt-page-header-renderer #banner img {
+    width: 100% !important;
+    max-width: 100% !important;
+    border-radius: 16px !important;
+}
+
+/* 5. CHANNEL CONTENT GRIDS & MULTI-COLUMN VIDEO SHELVES VISIBILITY */
+ytd-browse[page-subtype="channels"] #primary,
+ytd-browse[page-subtype="channel"] #primary,
+ytd-browse[page-subtype="c"] #primary,
+ytd-browse[page-subtype="user"] #primary {
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 100% !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    pointer-events: auto !important;
+}
+
+ytd-rich-grid-renderer,
+ytd-section-list-renderer,
+ytd-item-section-renderer,
+ytd-grid-renderer {
+    visibility: visible !important;
+    opacity: 1 !important;
+    pointer-events: auto !important;
+}
+
+ytd-rich-grid-renderer #contents,
+ytd-rich-grid-row,
+#contents.ytd-rich-grid-renderer {
+    width: 100% !important;
+    max-width: 100% !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+}
