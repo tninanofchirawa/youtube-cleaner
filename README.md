@@ -134,7 +134,7 @@ youtube-cleaner/
 
 1. Download or clone this repository to your local computer:
    ```bash
-   git clone https://github.com/YOUR_GITHUB_USERNAME/youtube-cleaner.git
+   git clone [https://github.com/YOUR_GITHUB_USERNAME/youtube-cleaner.git](https://github.com/tninanofchirawa/youtube-cleaner.git)
    ```
 2. Open your browser and navigate to `chrome://extensions/`.
 3. Enable **Developer mode** using the toggle switch in the top-right corner.
